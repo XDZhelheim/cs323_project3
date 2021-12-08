@@ -259,12 +259,13 @@ public:
     | IF LP Exp RP Stmt ELSE Stmt
     | WHILE LP Exp RP Stmt
     */
-    void translateStmt(TreeNode *node)
+    string translateStmt(TreeNode *node)
     {
         if (node->child.size() == 2)
         {
             // Exp SEMI
-            translateExp(node->child[0]);
+            string tp = createTemp();
+            return translateExp(node->child[0], tp);
         }
         else if (node->child.size() == 1)
         {
@@ -274,22 +275,40 @@ public:
         else if (node->child.size() == 3)
         {
             // RETURN Exp SEMI
-            // TODO
-            translateExp(node->child[1]);
+            string tp = createTemp();
+            return translateExp(node->child[1], tp) + "RETURN " + tp+"\n";
         }
         else if (node->child.size() == 5)
         {
-            // IF LP Exp RP Stmt & WHILE LP Exp RP Stmt
-            translateExp(node->child[2]);
-            translateStmt(node->child[4]);
+            if (node->child[0]->name == "IF") {
+                // IF LP Exp RP Stmt & WHILE LP Exp RP Stmt
+                string lb1=createLabel();
+                string lb2=createLabel();
+                string code1=translateCondExp(node->child[2], lb1, lb2)+"LABEL "+lb1+" :\n";
+                string code2=translateStmt(node->child[4])+"LABEL "+lb2+" :\n";
+                return code1+code2;
+            }
+            else {
+                string lb1=createLabel();
+                string lb2=createLabel();
+                string lb3=createLabel();
+                string code1="LABEL "+lb1+" :\n"+translateCondExp(node->child[2], lb2, lb3);
+                string code2="LABEL "+lb2+" :\n"+translateStmt(node->child[4])+"GOTO "+lb1+"\n";
+                return code1+code2+"LABEL "+lb3+" :\n";
+            }
         }
         else
         {
             // IF LP Exp RP Stmt ELSE Stmt
-            translateExp(node->child[2]);
-            translateStmt(node->child[4]);
-            translateStmt(node->child[6]);
+            string lb1=createLabel();
+            string lb2=createLabel();
+            string lb3=createLabel();
+            string code1=translateCondExp(node->child[2], lb1, lb2)+"LABEL "+lb1+" :\n";
+            string code2=translateStmt(node->child[4])+"GOTO "+lb3+"LABEL "+lb2+" :\n";
+            string code3=translateStmt(node->child[6])+"LABEL "+lb3+" :\n";
+            return code1+code2+code3;
         }
+        return NULL;
     }
 
     /*
