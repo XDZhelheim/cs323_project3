@@ -12,6 +12,7 @@ public:
     {
         root = node;
         out = ofstream(path);
+        
     }
 
     void generate() {
@@ -27,6 +28,7 @@ void generateIntermidiateCode(char *file_path)
     {
         out_path = path.substr(0, path.length() - 4) + ".ir";
     }
+    Analyser(root, out_path).analyze();
     Generator(root, out_path).generate();
 }
 
