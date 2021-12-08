@@ -29,6 +29,21 @@ void function_init()
     symbolTable["write"] = write;
 }
 
+string createVar()
+{
+    return "v" + to_string(vCounter++);
+}
+
+string createTemp()
+{
+    return "t" + to_string(tCounter++);
+}
+
+string createLabel()
+{
+    return "label" + to_string(lCounter++);
+}
+
 class Generator
 {
 private:
@@ -357,33 +372,38 @@ public:
     | FLOAT
     | CHAR
     */
-    string translateExp(TreeNode *node)
+    string translateExp(TreeNode *node, string place)
     {
         if (node->child.size() == 1)
         {
             if (node->child[0]->type == DataType::INT_TYPE)
             {
-                string name = "t" + to_string(tCounter++);
-                out << name << " := #" << to_string(strtol(node->child[0]->data.c_str(), NULL, 0)) << endl;
-                return name;
+                string name = createTemp();
+                return name + " := #" + to_string(strtol(node->child[0]->data.c_str(), NULL, 0)) + "\n";
             }
             else
             {
-                return node->child[0]->data;
+                return place + " := " + node->child[0]->data;
             }
         }
         else if (node->child.size() == 2)
         {
             if (node->child[0]->name == "MINUS")
             {
-                string name = "t" + to_string(tCounter++);
-                out << name << " := #0 - " << translateExp(node->child[0]) << endl;
-                return name;
+                string name = createTemp();
+                string code1 = translateExp(node->child[1], name);
+                string code2 = place + " := #0 - " + name + "\n";
+                return code1 + code2;
             }
             else
             {
             }
         }
+    }
+
+    string translateCondExp(TreeNode *node, string label_true, string label_false)
+    {
+
     }
 
     /*
