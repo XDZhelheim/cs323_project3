@@ -360,12 +360,26 @@ public:
         {
             if (node->child[0]->type == DataType::INT_TYPE)
             {
-                return "#" + to_string(strtol(node->child[0]->data.c_str(), NULL, 0));
+                string name = "t" + to_string(tCounter++);
+                out << name << " := #" << to_string(strtol(node->child[0]->data.c_str(), NULL, 0));
+                return name;
             }
             else
             {
-                out << node->child[0]->data << " ";
+                return node->child[0]->data;
             }
+        }
+        else if (node->child.size() == 2)
+        {
+            if (node->child[0]->name == "MINUS")
+            {
+
+            }
+            else
+            {
+                
+            }
+            
         }
     }
 
