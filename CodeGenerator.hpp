@@ -1,9 +1,9 @@
 #ifndef CODE_GENERTOR_HPP
 #define CODE_GENERTOR_HPP
+#define DEBUG 1
 
 #include "NodeAnalyser.hpp"
 #include <deque>
-#define DEBUG 0
 
 int tCounter = 0;
 int vCounter = 0;
@@ -191,6 +191,7 @@ public:
     {
         // TODO
 
+cout << 100 << endl;
         if (node->child.size() == 4)
         {
             // ID LP VarList RP
@@ -312,7 +313,7 @@ public:
             string code3 = translateStmt(node->child[6]) + "LABEL " + lb3 + " :\n";
             return code1 + code2 + code3;
         }
-        return NULL;
+        return "";
     }
 
     /*
@@ -403,11 +404,20 @@ public:
             if (node->child[0]->type == DataType::INT_TYPE)
             {
                 string name = createTemp();
+                if (DEBUG)
+                {
+                    cout << name + " := #" + to_string(strtol(node->child[0]->data.c_str(), NULL, 0)) + "\n";
+                }
+
                 return name + " := #" + to_string(strtol(node->child[0]->data.c_str(), NULL, 0)) + "\n";
             }
             else
             {
-                return place + " := " + node->child[0]->data;
+                if (DEBUG)
+                {
+                    cout << place + " := " + node->child[0]->data + "\n";
+                }
+                return place + " := " + node->child[0]->data + "\n";
             }
         }
         else if (node->child.size() == 2)
@@ -417,6 +427,11 @@ public:
                 string name = createTemp();
                 string code1 = translateExp(node->child[1], name);
                 string code2 = place + " := #0 - " + name + "\n";
+                if (DEBUG)
+                {
+                    cout << code1 + code2;
+                }
+
                 return code1 + code2;
             }
         }
@@ -426,10 +441,19 @@ public:
             {
                 if (node->child[0]->data == "read")
                 {
+                    if (DEBUG)
+                    {
+                        cout << "READ " + place + "\n";
+                    }
+
                     return "READ " + place + "\n";
                 }
                 else
                 {
+                    if (DEBUG)
+                    {
+                        cout << place + " := CALL " + node->child[0]->data + "\n";
+                    }
                     return place + " := CALL " + node->child[0]->data + "\n";
                 }
             }
@@ -437,8 +461,12 @@ public:
             {
                 string name = createTemp();
                 string code1 = translateExp(node->child[2], name);
-                string code2 = node->child[0]->name + " := " + name + "\n";
-                string code3 = place + " := " + node->child[0]->name + "\n";
+                string code2 = node->child[0]->child[0]->data + " := " + name + "\n";
+                string code3 = place + " := " + node->child[0]->child[0]->data + "\n";
+                if (DEBUG)
+                {
+                    cout << code1 + code2 + code3;
+                }
                 return code1 + code2 + code3;
             }
             else if (node->child[1]->name == "PLUS")
@@ -448,6 +476,10 @@ public:
                 string code1 = translateExp(node->child[0], name1);
                 string code2 = translateExp(node->child[2], name2);
                 string code3 = place + " := " + name1 + " + " + name2 + "\n";
+                if (DEBUG)
+                {
+                    cout << code1 + code2 + code3;
+                }
                 return code1 + code2 + code3;
             }
             else if (node->child[1]->name == "MINUS")
@@ -457,6 +489,10 @@ public:
                 string code1 = translateExp(node->child[0], name1);
                 string code2 = translateExp(node->child[2], name2);
                 string code3 = place + " := " + name1 + " - " + name2 + "\n";
+                if (DEBUG)
+                {
+                    cout << code1 + code2 + code3;
+                }
                 return code1 + code2 + code3;
             }
             else if (node->child[1]->name == "MUL")
@@ -466,6 +502,10 @@ public:
                 string code1 = translateExp(node->child[0], name1);
                 string code2 = translateExp(node->child[2], name2);
                 string code3 = place + " := " + name1 + " * " + name2 + "\n";
+                if (DEBUG)
+                {
+                    cout << code1 + code2 + code3;
+                }
                 return code1 + code2 + code3;
             }
             else if (node->child[1]->name == "DIV")
@@ -475,6 +515,10 @@ public:
                 string code1 = translateExp(node->child[0], name1);
                 string code2 = translateExp(node->child[2], name2);
                 string code3 = place + " := " + name1 + " / " + name2 + "\n";
+                if (DEBUG)
+                {
+                    cout << code1 + code2 + code3;
+                }
                 return code1 + code2 + code3;
             }
         }
@@ -483,6 +527,11 @@ public:
             if (node->child[0]->data == "write")
             {
                 string name = createTemp();
+                if (DEBUG)
+                {
+                    cout << translateExp(node->child[2], name) + "WRITE " + name + "\n";
+                    ;
+                }
                 return translateExp(node->child[2], name) + "WRITE " + name + "\n";
             }
             else
@@ -494,6 +543,10 @@ public:
                 {
                     code2 += "ARG " + arg + "\n";
                 }
+                if (DEBUG)
+                {
+                    cout << code1 + code2 + place + " := CALL " + node->child[0]->data + "\n";
+                }
                 return code1 + code2 + place + " := CALL " + node->child[0]->data + "\n";
             }
         }
@@ -503,6 +556,10 @@ public:
         string code0 = place + " := #0\n";
         string code1 = translateCondExp(node, label1, label2);
         string code2 = "LABEL " + label1 + " :\n" + place + " := #1\nLABEL " + label2 + " :\n";
+        if (DEBUG)
+        {
+            cout << code0 + code1 + code2;
+        }
         return code0 + code1 + code2;
     }
 
