@@ -8,6 +8,8 @@ int tCounter = 0;
 int vCounter = 0;
 int lCounter = 0;
 
+std::map<std::string, std::string> vmap;
+
 void function_init()
 {
     Type *int_type = new Type(Category::INT_VAL);
@@ -351,6 +353,14 @@ public:
     */
     void translateExp(TreeNode *node)
     {
+        if (node->child.size() == 1)
+        {
+            if (node->child[0]->type == DataType::INT_TYPE)
+            {
+                out << strtol(node->child[0]->data.c_str(), NULL, 0) << " ";
+            }
+        }
+        
     }
 
     /*
