@@ -2,6 +2,7 @@
 #define CODE_GENERTOR_HPP
 
 #include "NodeAnalyser.hpp"
+#include <deque>
 #define DEBUG 0
 
 int tCounter = 0;
@@ -12,6 +13,7 @@ using std::endl;
 using std::map;
 using std::string;
 using std::to_string;
+using std::deque;
 
 map<string, string> vmap;
 
@@ -245,7 +247,7 @@ public:
         else
         {
             // Stmt StmtList
-            translateStmt(node->child[0]);
+            out<<translateStmt(node->child[0]);
             translateStmtList(node->child[1]);
         }
     }
@@ -304,7 +306,7 @@ public:
             string lb2=createLabel();
             string lb3=createLabel();
             string code1=translateCondExp(node->child[2], lb1, lb2)+"LABEL "+lb1+" :\n";
-            string code2=translateStmt(node->child[4])+"GOTO "+lb3+"LABEL "+lb2+" :\n";
+            string code2=translateStmt(node->child[4])+"GOTO "+lb3+"\nLABEL "+lb2+" :\n";
             string code3=translateStmt(node->child[6])+"LABEL "+lb3+" :\n";
             return code1+code2+code3;
         }
@@ -343,7 +345,7 @@ public:
     */
     void translateDecList(TreeNode *node)
     {
-        translateDec(node->child[0]);
+        out<<translateDec(node->child[0]);
         if (node->child.size() == 3)
         {
             translateDecList(node->child[2]);
@@ -355,12 +357,13 @@ public:
       VarDec
     | VarDec ASSIGN Exp
     */
-    void translateDec(TreeNode *node)
+    string translateDec(TreeNode *node)
     {
         translateVarDec(node->child[0]);
         if (node->child.size() == 3)
         {
-            translateExp(node->child[2]);
+            string v=createVar();
+            return translateExp(node->child[2], v);
         }
     }
 
@@ -554,14 +557,22 @@ public:
       Exp COMMA Args
     | Exp
     */
-    void translateArgs(TreeNode *node)
+    string translateArgs(TreeNode *node, deque<string>& argList)
     {
-        translateExp(node->child[0]);
-
-        if (node->child.size() == 3)
+        if (node->child.size() == 1)
+        {
+            string v=createVar();
+            argList.push_front(v);
+            return translateExp(node->child[0], v);
+        }
+        else
         {
             // Exp COMMA Args
-            translateArgs(node->child[2]);
+            string v=createVar();
+            argList.push_front(v);
+            string code1=translateExp(node->child[0], v);
+            string code2=translateArgs(node->child[2], argList);
+            return code1+code2;
         }
     }
 };
