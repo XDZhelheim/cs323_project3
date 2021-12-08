@@ -414,15 +414,139 @@ public:
                 string code2 = place + " := #0 - " + name + "\n";
                 return code1 + code2;
             }
-            else
+        }
+        else
+        {
+            if (node->child[1]->name == "ASSIGN")
             {
+                string name = createTemp();
+                string code1 = translateExp(node->child[2], name);
+                string code2 = node->child[0]->name + " := " + name + "\n";
+                string code3 = place + " := " + node->child[0]->name + "\n";
+                return code1 + code2 + code3;
+            }
+            else if (node->child[1]->name == "PLUS")
+            {
+                string name1 = createTemp();
+                string name2 = createTemp();
+                string code1 = translateExp(node->child[0], name1);
+                string code2 = translateExp(node->child[2], name2);
+                string code3 = place + " := " + name1 + " + " + name2 + "\n";
+                return code1 + code2 + code3;
+            }
+            else if (node->child[1]->name == "MINUS")
+            {
+                string name1 = createTemp();
+                string name2 = createTemp();
+                string code1 = translateExp(node->child[0], name1);
+                string code2 = translateExp(node->child[2], name2);
+                string code3 = place + " := " + name1 + " - " + name2 + "\n";
+                return code1 + code2 + code3;
+            }
+            else if (node->child[1]->name == "MUL")
+            {
+                string name1 = createTemp();
+                string name2 = createTemp();
+                string code1 = translateExp(node->child[0], name1);
+                string code2 = translateExp(node->child[2], name2);
+                string code3 = place + " := " + name1 + " * " + name2 + "\n";
+                return code1 + code2 + code3;
+            }
+            else if (node->child[1]->name == "DIV")
+            {
+                string name1 = createTemp();
+                string name2 = createTemp();
+                string code1 = translateExp(node->child[0], name1);
+                string code2 = translateExp(node->child[2], name2);
+                string code3 = place + " := " + name1 + " / " + name2 + "\n";
+                return code1 + code2 + code3;
             }
         }
+        string label1 = createLabel();
+        string label2 = createLabel();
+        string code0 = place + " := #0\n";
+        string code1 = translateCondExp(node, label1, label2);
+        string code2 = "LABEL " + label1 + " :\n" + place + " := #1\nLABEL " + label2 + " :\n";
+        return code0 + code1 + code2;
     }
 
     string translateCondExp(TreeNode *node, string label_true, string label_false)
     {
-
+        if (node->child.size() == 2)
+        {
+            return translateCondExp(node, label_false, label_true);
+        }
+        else
+        {
+            if (node->child[1]->name == "AND")
+            {
+                string label = createLabel();
+                string code1 = translateCondExp(node->child[0], label, label_false) + "LABEL " + label + " :\n";
+                string code2 = translateCondExp(node->child[2], label_true, label_false);
+                return code1 + code2;
+            }
+            else if (node->child[1]->name == "OR")
+            {
+                string label = createLabel();
+                string code1 = translateCondExp(node->child[0], label_true, label) + "LABEL " + label + " :\n";
+                string code2 = translateCondExp(node->child[2], label_true, label_false);
+                return code1 + code2;
+            }
+            else if (node->child[1]->name == "EQ")
+            {
+                string name1 = createTemp();
+                string name2 = createTemp();
+                string code1 = translateExp(node->child[0], name1);
+                string code2 = translateExp(node->child[2], name2);
+                string code3 = "IF " + name1 + " == " + name2 + " GOTO " + label_true + "\nGOTO " + label_false + "\n";
+                return code1 + code2 + code3;
+            }
+            else if (node->child[1]->name == "NE")
+            {
+                string name1 = createTemp();
+                string name2 = createTemp();
+                string code1 = translateExp(node->child[0], name1);
+                string code2 = translateExp(node->child[2], name2);
+                string code3 = "IF " + name1 + " != " + name2 + " GOTO " + label_true + "\nGOTO " + label_false + "\n";
+                return code1 + code2 + code3;
+            }
+            else if (node->child[1]->name == "GT")
+            {
+                string name1 = createTemp();
+                string name2 = createTemp();
+                string code1 = translateExp(node->child[0], name1);
+                string code2 = translateExp(node->child[2], name2);
+                string code3 = "IF " + name1 + " > " + name2 + " GOTO " + label_true + "\nGOTO " + label_false + "\n";
+                return code1 + code2 + code3;
+            }
+            else if (node->child[1]->name == "GE")
+            {
+                string name1 = createTemp();
+                string name2 = createTemp();
+                string code1 = translateExp(node->child[0], name1);
+                string code2 = translateExp(node->child[2], name2);
+                string code3 = "IF " + name1 + " >= " + name2 + " GOTO " + label_true + "\nGOTO " + label_false + "\n";
+                return code1 + code2 + code3;
+            }
+            else if (node->child[1]->name == "LT")
+            {
+                string name1 = createTemp();
+                string name2 = createTemp();
+                string code1 = translateExp(node->child[0], name1);
+                string code2 = translateExp(node->child[2], name2);
+                string code3 = "IF " + name1 + " < " + name2 + " GOTO " + label_true + "\nGOTO " + label_false + "\n";
+                return code1 + code2 + code3;
+            }
+            else
+            {
+                string name1 = createTemp();
+                string name2 = createTemp();
+                string code1 = translateExp(node->child[0], name1);
+                string code2 = translateExp(node->child[2], name2);
+                string code3 = "IF " + name1 + " <= " + name2 + " GOTO " + label_true + "\nGOTO " + label_false + "\n";
+                return code1 + code2 + code3;
+            }
+        }
     }
 
     /*
