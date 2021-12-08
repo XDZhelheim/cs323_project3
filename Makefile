@@ -1,13 +1,11 @@
 ifeq ($(shell uname), Darwin) # macOS
-	CC=gcc-11
-	CXX=g++-11
 	CXXFLAGS=-ll -ly --std=c++11
 else
-	CC=gcc
-	CXX=g++
 	CXXFLAGS=-lfl -ly
 endif
 
+CC=gcc
+CXX=g++
 FLEX=flex
 BISON=bison
 

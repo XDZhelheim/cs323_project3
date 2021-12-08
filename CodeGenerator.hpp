@@ -4,6 +4,20 @@
 #include "NodeAnalyser.hpp"
 #define DEBUG 0
 
+void function_init()
+{
+    Type *int_type = new Type(Category::INT_VAL);
+
+    Type *read = new Type(Category::FUNCTION, "read");
+    read->returnType = int_type;
+    symbolTable["read"] = read;
+
+    Type *write = new Type(Category::FUNCTION, "write");
+    write->returnType = int_type;
+    write->varlist.push_back(int_type);
+    symbolTable["write"] = write;
+}
+
 class Generator {
 private:
     TreeNode *root;
@@ -223,13 +237,16 @@ public:
 void generateIntermidiateCode(char *file_path)
 {
     string path = file_path;
-    string out_path = "/dev/stdout";
+    string p2_path = "/dev/stdout";
+    string p3_path = "/dev/stdout";
     if (path.substr(path.length() - 4) == ".spl")
     {
-        out_path = path.substr(0, path.length() - 4) + ".ir";
+        p2_path = path.substr(0, path.length() - 4) + ".out";
+        p3_path = path.substr(0, path.length() - 4) + ".ir";
     }
-    Analyser(root, out_path).analyze();
-    Generator(root, out_path).generate();
+    function_init();
+    Analyser(root, p2_path).analyze();
+    Generator(root, p3_path).generate();
 }
 
 #endif

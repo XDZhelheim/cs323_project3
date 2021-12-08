@@ -94,7 +94,11 @@ lex.yy.c
 .vscode/
 
 # test result
-/test-self/*.out
+/test/*.ir
+/test/*.out
+
+/sample/*.ir
+/sample/*.out
 
 temp*
 

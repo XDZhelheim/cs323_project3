@@ -193,7 +193,7 @@ int main(int argc, char **argv){
         else
         {
             fclose(output_file);
-            analysisTreeNode(file_path);
+            generateIntermidiateCode(file_path);
         }
         return 0;
     } else{
