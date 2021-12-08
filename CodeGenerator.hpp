@@ -2,12 +2,14 @@
 #define CODE_GENERTOR_HPP
 
 #include "NodeAnalyser.hpp"
+#include <deque>
 #define DEBUG 0
 
 int tCounter = 0;
 int vCounter = 0;
 int lCounter = 0;
 
+using std::deque;
 using std::endl;
 using std::map;
 using std::string;
@@ -176,7 +178,7 @@ public:
         }
         else
         {
-            vmap[node->child[0]->name]="v"+to_string(vCounter++);
+            vmap[node->child[0]->name] = "v" + to_string(vCounter++);
         }
     }
 
@@ -276,37 +278,39 @@ public:
         {
             // RETURN Exp SEMI
             string tp = createTemp();
-            return translateExp(node->child[1], tp) + "RETURN " + tp+"\n";
+            return translateExp(node->child[1], tp) + "RETURN " + tp + "\n";
         }
         else if (node->child.size() == 5)
         {
-            if (node->child[0]->name == "IF") {
+            if (node->child[0]->name == "IF")
+            {
                 // IF LP Exp RP Stmt & WHILE LP Exp RP Stmt
-                string lb1=createLabel();
-                string lb2=createLabel();
-                string code1=translateCondExp(node->child[2], lb1, lb2)+"LABEL "+lb1+" :\n";
-                string code2=translateStmt(node->child[4])+"LABEL "+lb2+" :\n";
-                return code1+code2;
+                string lb1 = createLabel();
+                string lb2 = createLabel();
+                string code1 = translateCondExp(node->child[2], lb1, lb2) + "LABEL " + lb1 + " :\n";
+                string code2 = translateStmt(node->child[4]) + "LABEL " + lb2 + " :\n";
+                return code1 + code2;
             }
-            else {
-                string lb1=createLabel();
-                string lb2=createLabel();
-                string lb3=createLabel();
-                string code1="LABEL "+lb1+" :\n"+translateCondExp(node->child[2], lb2, lb3);
-                string code2="LABEL "+lb2+" :\n"+translateStmt(node->child[4])+"GOTO "+lb1+"\n";
-                return code1+code2+"LABEL "+lb3+" :\n";
+            else
+            {
+                string lb1 = createLabel();
+                string lb2 = createLabel();
+                string lb3 = createLabel();
+                string code1 = "LABEL " + lb1 + " :\n" + translateCondExp(node->child[2], lb2, lb3);
+                string code2 = "LABEL " + lb2 + " :\n" + translateStmt(node->child[4]) + "GOTO " + lb1 + "\n";
+                return code1 + code2 + "LABEL " + lb3 + " :\n";
             }
         }
         else
         {
             // IF LP Exp RP Stmt ELSE Stmt
-            string lb1=createLabel();
-            string lb2=createLabel();
-            string lb3=createLabel();
-            string code1=translateCondExp(node->child[2], lb1, lb2)+"LABEL "+lb1+" :\n";
-            string code2=translateStmt(node->child[4])+"GOTO "+lb3+"LABEL "+lb2+" :\n";
-            string code3=translateStmt(node->child[6])+"LABEL "+lb3+" :\n";
-            return code1+code2+code3;
+            string lb1 = createLabel();
+            string lb2 = createLabel();
+            string lb3 = createLabel();
+            string code1 = translateCondExp(node->child[2], lb1, lb2) + "LABEL " + lb1 + " :\n";
+            string code2 = translateStmt(node->child[4]) + "GOTO " + lb3 + "LABEL " + lb2 + " :\n";
+            string code3 = translateStmt(node->child[6]) + "LABEL " + lb3 + " :\n";
+            return code1 + code2 + code3;
         }
         return NULL;
     }
@@ -415,9 +419,20 @@ public:
                 return code1 + code2;
             }
         }
-        else
+        else if (node->child.size() == 3)
         {
-            if (node->child[1]->name == "ASSIGN")
+            if (node->child[1]->child.size() == 0 && node->child[2]->child.size() == 0)
+            {
+                if (node->child[0]->data == "read")
+                {
+                    return "READ " + place + "\n";
+                }
+                else
+                {
+                    return place + " := CALL " + node->child[0]->data + "\n";
+                }
+            }
+            else if (node->child[1]->name == "ASSIGN")
             {
                 string name = createTemp();
                 string code1 = translateExp(node->child[2], name);
@@ -462,6 +477,26 @@ public:
                 return code1 + code2 + code3;
             }
         }
+        else
+        {
+            if (node->child[0]->data == "write")
+            {
+                string name = createTemp();
+                return translateExp(node->child[2], name) + "WRITE " + name + "\n";
+            }
+            else
+            {
+                deque<string> args;
+                string code1 = translateArgs(node->child[2], args);
+                string code2;
+                for (auto arg : args)
+                {
+                    code2 += "ARG " + arg + "\n";
+                }
+                return code1 + code2 + place + " := CALL " + node->child[0]->data + "\n";
+            }
+        }
+
         string label1 = createLabel();
         string label2 = createLabel();
         string code0 = place + " := #0\n";
