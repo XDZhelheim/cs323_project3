@@ -9,6 +9,9 @@ int vCounter = 0;
 int lCounter = 0;
 
 std::map<std::string, std::string> vmap;
+using std::map;
+using std::string;
+using std::to_string;
 
 void function_init()
 {
@@ -351,16 +354,19 @@ public:
     | FLOAT
     | CHAR
     */
-    void translateExp(TreeNode *node)
+    string translateExp(TreeNode *node)
     {
         if (node->child.size() == 1)
         {
             if (node->child[0]->type == DataType::INT_TYPE)
             {
-                out << strtol(node->child[0]->data.c_str(), NULL, 0) << " ";
+                return "#" + to_string(strtol(node->child[0]->data.c_str(), NULL, 0));
+            }
+            else
+            {
+                out << node->child[0]->data << " ";
             }
         }
-        
     }
 
     /*
