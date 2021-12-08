@@ -4,6 +4,10 @@
 #include "NodeAnalyser.hpp"
 #define DEBUG 0
 
+int tCounter = 0;
+int vCounter = 0;
+int lCounter = 0;
+
 void function_init()
 {
     Type *int_type = new Type(Category::INT_VAL);
@@ -39,9 +43,6 @@ public:
     */
     void translateProgram(TreeNode *node)
     {
-        if (DEBUG)
-            cout << "Program" << endl;
-
         translateExtDefList(node->child[0]);
     }
 
@@ -52,7 +53,12 @@ public:
     */
     void translateExtDefList(TreeNode *node)
     {
-
+        if (node->child.empty())
+        {
+            return;
+        }
+        translateExtDef(node->child[0]);
+        translateExtDefList(node->child[1]);
     }
 
     /*
@@ -63,7 +69,24 @@ public:
     */
     void translateExtDef(TreeNode *node)
     {
-
+        if (node->child.size() == 2)
+        {
+            // Specifier SEMI
+            translateSpecifier(node->child[0]);
+        }
+        else
+        {
+            if (node->child[2]->child.empty())
+            {
+                // Specifier ExtDecList SEMI
+                translateExtDecList(node->child[1]);
+            }
+            else
+            {
+                translateFunDec(node->child[1]);
+                translateCompSt(node->child[2]);
+            }
+        }
     }
 
     /*
@@ -73,6 +96,13 @@ public:
     */
     void translateExtDecList(TreeNode *node)
     {
+        translateVarDec(node->child[0]);
+
+        if (node->child.size() == 3)
+        {
+            // VarDec COMMA ExtDecList
+            translateExtDecList(node->child[2]);
+        }
     }
 
     /*
@@ -82,6 +112,14 @@ public:
     */
     void translateSpecifier(TreeNode *node)
     {
+        if (node->child[0]->child.empty()) {
+            return;
+        }
+        else
+        {
+            // StructSpecifier
+            translateStructSpecifier(node->child[0]);
+        }
     }
 
     /*
@@ -91,6 +129,12 @@ public:
     */
     void translateStructSpecifier(TreeNode *node)
     {
+        //! not implemented
+        if (node->child.size() == 5)
+        {
+            // STRUCT ID LC DefList RC
+            translateDefList(node->child[3]);
+        }
     }
 
     /*
@@ -100,6 +144,12 @@ public:
     */
     void translateVarDec(TreeNode *node)
     {
+        // TODO
+        
+        if (node->child.size() == 4) {
+            //! not implemented
+            translateVarDec(node->child[0]);
+        }
     }
 
     /*
@@ -109,6 +159,13 @@ public:
     */
     void translateFunDec(TreeNode *node)
     {
+        // TODO
+
+        if (node->child.size() == 4)
+        {
+            // ID LP VarList RP
+            translateVarList(node->child[2]);
+        }
     }
 
     /*
@@ -118,6 +175,12 @@ public:
     */
     void translateVarList(TreeNode *node)
     {
+        translateParamDec(node->child[0]);
+        if (node->child.size() == 3)
+        {
+            // ParamDec COMMA VarList
+            translateVarList(node->child[2]);
+        }
     }
 
     /*
@@ -126,6 +189,8 @@ public:
     */
     void translateParamDec(TreeNode *node)
     {
+        translateSpecifier(node->child[0]);
+        translateVarDec(node->child[1]);
     }
 
     /*
@@ -134,6 +199,8 @@ public:
     */
     void translateCompSt(TreeNode *node)
     {
+        translateDefList(node->child[1]);
+        translateStmtList(node->child[2]);
     }
 
     /*
@@ -143,6 +210,16 @@ public:
     */
     void translateStmtList(TreeNode *node)
     {
+        if (node->child.empty())
+        {
+            return;
+        }
+        else
+        {
+            // Stmt StmtList
+            translateStmt(node->child[0]);
+            translateStmtList(node->child[1]);
+        }
     }
 
     /*
@@ -156,6 +233,36 @@ public:
     */
     void translateStmt(TreeNode *node)
     {
+        if (node->child.size() == 2)
+        {
+            // Exp SEMI
+            translateExp(node->child[0]);
+        }
+        else if (node->child.size() == 1)
+        {
+            // CompSt
+            translateCompSt(node->child[0]);
+        }
+        else if (node->child.size() == 3)
+        {
+            // RETURN Exp SEMI
+            // TODO
+
+            translateExp(node->child[1]);
+        }
+        else if (node->child.size() == 5)
+        {
+            // IF LP Exp RP Stmt & WHILE LP Exp RP Stmt
+            translateExp(node->child[2]);
+            translateStmt(node->child[4]);
+        }
+        else
+        {
+            // IF LP Exp RP Stmt ELSE Stmt
+            translateExp(node->child[2]);
+            translateStmt(node->child[4]);
+            translateStmt(node->child[6]);
+        }
     }
 
     /*
@@ -165,6 +272,12 @@ public:
     */
     void translateDefList(TreeNode *node)
     {
+        if (node->child.size() == 2)
+        {
+            // Def DefList
+            translateDef(node->child[0]);
+            translateDefList(node->child[1]);
+        }
     }
 
     /*
@@ -173,6 +286,8 @@ public:
     */
     void translateDef(TreeNode *node)
     {
+        translateSpecifier(node->child[0]);
+        translateDecList(node->child[1]);
     }
 
     /*
@@ -182,6 +297,10 @@ public:
     */
     void translateDecList(TreeNode *node)
     {
+        translateDec(node->child[0]);
+        if (node->child.size() == 3) {
+            translateDecList(node->child[2]);
+        }
     }
 
     /*
@@ -191,6 +310,10 @@ public:
     */
     void translateDec(TreeNode *node)
     {
+        translateVarDec(node->child[0]);
+        if (node->child.size() == 3) {
+            translateExp(node->child[2]);
+        }
     }
 
     /*
@@ -231,6 +354,13 @@ public:
     */
     void translateArgs(TreeNode *node)
     {
+        translateExp(node->child[0]);
+        
+        if (node->child.size() == 3)
+        {
+            // Exp COMMA Args
+            translateArgs(node->child[2]);
+        }
     }
 };
 
