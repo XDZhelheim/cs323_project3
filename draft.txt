@@ -1,0 +1,43 @@
+if (a > (b + c))
+
+transStmt():
+exp(a, >, exp(b, +, c))
+
+exp(a, >, t1)
+
+exp(): 算术运算
+    t1
+    print t1 := b + c
+    return "t1"
+exp(): 逻辑运算
+    return "a > t1"
+
+-------
+
+if (a > b && c > d)
+exp(exp(a, >, b), &&, exp(c, >, d))
+exp("a>b", &&, "c>d")
+
+---
+
+if (a==b && c==(d+e))
+
+exp(exp(a, ==, b), && exp(exp c, ==, exp(d, +, e)))
+label1=new label
+code1=transExp(exp(a, ==, b), label1, label_false) + "LABEL label1"
+     ="t1=a"+"t2=b"+"IF t1==t2 GOTO label1"+"GOTO label_false"
+code2=transExp(exp(exp c, ==, exp(d, +, e)), lb_t, lb_false)
+     ="t3=c"+transExp(exp(d, +, e))+"IF t3==t4 GOTO lb_t"+"GOTO label_false"
+     ="t3=c"+"t4=d"+"t5=e"+"t3=t4+t5"+"IF t3==t4 GOTO lb_t"+"GOTO label_false"
+:
+t1=a
+t2=b
+IF t1==t2 GOTO label1
+GOTO label_false
+LABEL label1:
+t3=c
+t4=d
+t5=e
+t3=t4+t5
+IF t3==t4 GOTO lb_t
+GOTO label_false

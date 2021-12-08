@@ -154,12 +154,14 @@ public:
     */
     void translateVarDec(TreeNode *node)
     {
-        // TODO
-
         if (node->child.size() == 4)
         {
             //! not implemented
             translateVarDec(node->child[0]);
+        }
+        else
+        {
+            vmap[node->child[0]->name]="v"+to_string(vCounter++);
         }
     }
 
@@ -258,7 +260,6 @@ public:
         {
             // RETURN Exp SEMI
             // TODO
-
             translateExp(node->child[1]);
         }
         else if (node->child.size() == 5)
