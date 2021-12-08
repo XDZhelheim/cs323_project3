@@ -22,7 +22,8 @@ void function_init()
     symbolTable["write"] = write;
 }
 
-class Generator {
+class Generator
+{
 private:
     TreeNode *root;
 
@@ -33,7 +34,8 @@ public:
         out = ofstream(path);
     }
 
-    void generate() {
+    void generate()
+    {
         translateProgram(root);
     }
 
@@ -112,7 +114,8 @@ public:
     */
     void translateSpecifier(TreeNode *node)
     {
-        if (node->child[0]->child.empty()) {
+        if (node->child[0]->child.empty())
+        {
             return;
         }
         else
@@ -145,8 +148,9 @@ public:
     void translateVarDec(TreeNode *node)
     {
         // TODO
-        
-        if (node->child.size() == 4) {
+
+        if (node->child.size() == 4)
+        {
             //! not implemented
             translateVarDec(node->child[0]);
         }
@@ -298,7 +302,8 @@ public:
     void translateDecList(TreeNode *node)
     {
         translateDec(node->child[0]);
-        if (node->child.size() == 3) {
+        if (node->child.size() == 3)
+        {
             translateDecList(node->child[2]);
         }
     }
@@ -311,7 +316,8 @@ public:
     void translateDec(TreeNode *node)
     {
         translateVarDec(node->child[0]);
-        if (node->child.size() == 3) {
+        if (node->child.size() == 3)
+        {
             translateExp(node->child[2]);
         }
     }
@@ -355,7 +361,7 @@ public:
     void translateArgs(TreeNode *node)
     {
         translateExp(node->child[0]);
-        
+
         if (node->child.size() == 3)
         {
             // Exp COMMA Args
