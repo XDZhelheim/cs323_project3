@@ -30,19 +30,19 @@ public:
     }
 
     void generate() {
-        
+        translateProgram(root);
     }
 
     /*
     Program: 
       ExtDefList 
     */
-    void analyzeProgram(TreeNode *node)
+    void translateProgram(TreeNode *node)
     {
         if (DEBUG)
             cout << "Program" << endl;
 
-        analyzeExtDefList(node->child[0]);
+        translateExtDefList(node->child[0]);
     }
 
     /*
@@ -50,7 +50,7 @@ public:
       ExtDef ExtDefList
     | %empty
     */
-    void analyzeExtDefList(TreeNode *node)
+    void translateExtDefList(TreeNode *node)
     {
 
     }
@@ -61,7 +61,7 @@ public:
     | Specifier SEMI
     | Specifier FunDec CompSt
     */
-    void analyzeExtDef(TreeNode *node)
+    void translateExtDef(TreeNode *node)
     {
 
     }
@@ -71,7 +71,7 @@ public:
       VarDec
     | VarDec COMMA ExtDecList
     */
-    void analyzeExtDecList(TreeNode *node)
+    void translateExtDecList(TreeNode *node)
     {
     }
 
@@ -80,7 +80,7 @@ public:
       TYPE
     | StructSpecifier
     */
-    void analyzeSpecifier(TreeNode *node)
+    void translateSpecifier(TreeNode *node)
     {
     }
 
@@ -89,7 +89,7 @@ public:
       STRUCT ID LC DefList RC
     | STRUCT ID
     */
-    void analyzeStructSpecifier(TreeNode *node)
+    void translateStructSpecifier(TreeNode *node)
     {
     }
 
@@ -98,7 +98,7 @@ public:
       ID
     | VarDec LB INT RB
     */
-    void analyzeVarDec(TreeNode *node)
+    void translateVarDec(TreeNode *node)
     {
     }
 
@@ -107,7 +107,7 @@ public:
       ID LP VarList RP
     | ID LP RP
     */
-    void analyzeFunDec(TreeNode *node)
+    void translateFunDec(TreeNode *node)
     {
     }
 
@@ -116,7 +116,7 @@ public:
       ParamDec COMMA VarList
     | ParamDec
     */
-    void analyzeVarList(TreeNode *node)
+    void translateVarList(TreeNode *node)
     {
     }
 
@@ -124,7 +124,7 @@ public:
     ParamDec: 
       Specifier VarDec
     */
-    void analyzeParamDec(TreeNode *node)
+    void translateParamDec(TreeNode *node)
     {
     }
 
@@ -132,7 +132,7 @@ public:
     CompSt: 
       LC DefList StmtList RC
     */
-    void analyzeCompSt(TreeNode *node)
+    void translateCompSt(TreeNode *node)
     {
     }
 
@@ -141,7 +141,7 @@ public:
       Stmt StmtList
     | %empty
     */
-    void analyzeStmtList(TreeNode *node)
+    void translateStmtList(TreeNode *node)
     {
     }
 
@@ -154,7 +154,7 @@ public:
     | IF LP Exp RP Stmt ELSE Stmt
     | WHILE LP Exp RP Stmt
     */
-    void analyzeStmt(TreeNode *node)
+    void translateStmt(TreeNode *node)
     {
     }
 
@@ -163,7 +163,7 @@ public:
       Def DefList
     | %empty
     */
-    void analyzeDefList(TreeNode *node)
+    void translateDefList(TreeNode *node)
     {
     }
 
@@ -171,7 +171,7 @@ public:
     Def: 
       Specifier DecList SEMI 
     */
-    void analyzeDef(TreeNode *node)
+    void translateDef(TreeNode *node)
     {
     }
 
@@ -180,7 +180,7 @@ public:
       Dec
     | Dec COMMA DecList
     */
-    void analyzeDecList(TreeNode *node)
+    void translateDecList(TreeNode *node)
     {
     }
 
@@ -189,7 +189,7 @@ public:
       VarDec
     | VarDec ASSIGN Exp
     */
-    void analyzeDec(TreeNode *node)
+    void translateDec(TreeNode *node)
     {
     }
 
@@ -220,7 +220,7 @@ public:
     | FLOAT
     | CHAR
     */
-    void analyzeExp(TreeNode *node)
+    void translateExp(TreeNode *node)
     {
     }
 
@@ -229,7 +229,7 @@ public:
       Exp COMMA Args
     | Exp
     */
-    void analyzeArgs(TreeNode *node)
+    void translateArgs(TreeNode *node)
     {
     }
 };
