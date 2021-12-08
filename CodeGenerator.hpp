@@ -191,7 +191,6 @@ public:
     {
         // TODO
 
-cout << 100 << endl;
         if (node->child.size() == 4)
         {
             // ID LP VarList RP
@@ -368,6 +367,7 @@ cout << 100 << endl;
             string v = createVar();
             return translateExp(node->child[2], v);
         }
+        return "";
     }
 
     /*
