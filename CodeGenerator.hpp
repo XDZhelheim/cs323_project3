@@ -14,7 +14,6 @@ using std::endl;
 using std::map;
 using std::string;
 using std::to_string;
-using std::deque;
 
 map<string, string> vmap;
 
@@ -248,7 +247,7 @@ public:
         else
         {
             // Stmt StmtList
-            out<<translateStmt(node->child[0]);
+            out << translateStmt(node->child[0]);
             translateStmtList(node->child[1]);
         }
     }
@@ -305,13 +304,13 @@ public:
         else
         {
             // IF LP Exp RP Stmt ELSE Stmt
-            string lb1=createLabel();
-            string lb2=createLabel();
-            string lb3=createLabel();
-            string code1=translateCondExp(node->child[2], lb1, lb2)+"LABEL "+lb1+" :\n";
-            string code2=translateStmt(node->child[4])+"GOTO "+lb3+"\nLABEL "+lb2+" :\n";
-            string code3=translateStmt(node->child[6])+"LABEL "+lb3+" :\n";
-            return code1+code2+code3;
+            string lb1 = createLabel();
+            string lb2 = createLabel();
+            string lb3 = createLabel();
+            string code1 = translateCondExp(node->child[2], lb1, lb2) + "LABEL " + lb1 + " :\n";
+            string code2 = translateStmt(node->child[4]) + "GOTO " + lb3 + "\nLABEL " + lb2 + " :\n";
+            string code3 = translateStmt(node->child[6]) + "LABEL " + lb3 + " :\n";
+            return code1 + code2 + code3;
         }
         return NULL;
     }
@@ -348,7 +347,7 @@ public:
     */
     void translateDecList(TreeNode *node)
     {
-        out<<translateDec(node->child[0]);
+        out << translateDec(node->child[0]);
         if (node->child.size() == 3)
         {
             translateDecList(node->child[2]);
@@ -365,7 +364,7 @@ public:
         translateVarDec(node->child[0]);
         if (node->child.size() == 3)
         {
-            string v=createVar();
+            string v = createVar();
             return translateExp(node->child[2], v);
         }
     }
@@ -591,22 +590,22 @@ public:
       Exp COMMA Args
     | Exp
     */
-    string translateArgs(TreeNode *node, deque<string>& argList)
+    string translateArgs(TreeNode *node, deque<string> &argList)
     {
         if (node->child.size() == 1)
         {
-            string v=createVar();
+            string v = createVar();
             argList.push_front(v);
             return translateExp(node->child[0], v);
         }
         else
         {
             // Exp COMMA Args
-            string v=createVar();
+            string v = createVar();
             argList.push_front(v);
-            string code1=translateExp(node->child[0], v);
-            string code2=translateArgs(node->child[2], argList);
-            return code1+code2;
+            string code1 = translateExp(node->child[0], v);
+            string code2 = translateArgs(node->child[2], argList);
+            return code1 + code2;
         }
     }
 };
