@@ -683,23 +683,30 @@ public:
                 {
                     return new Type(Category::ERROR_VAL);
                 }
-                
+
                 return exp1->array->type;
             }
         }
         else
         {
             // INT FLOAT CHAR ID
+            Type *t;
             switch (node->child[0]->type)
             {
             case DataType::INT_TYPE:
-                return new Type(Category::INT_VAL);
+                t = new Type(Category::INT_VAL);
+                t->primitive_value = node->child[0]->data;
+                return t; 
 
             case DataType::FLOAT_TYPE:
-                return new Type(Category::FLOAT_VAL);
+                t = new Type(Category::FLOAT_VAL);
+                t->primitive_value = node->child[0]->data;
+                return t; 
 
             case DataType::CHAR_TYPE:
-                return new Type(Category::CHAR_VAL);
+                t = new Type(Category::CHAR_VAL);
+                t->primitive_value = node->child[0]->data;
+                return t; 
 
             default:
                 if (symbolTable.count(node->child[0]->data))
