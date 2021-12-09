@@ -8,6 +8,6 @@ fi
 
 for i in `ls test/*.spl`
 do
-    echo "#include <io.hpp>" > "$i.cpp"
-    cat $i >> "$i.cpp"
+    echo "#include <io.hpp>" > "$i.cui.cpp"
+    cat $i >> "$i.cui.cpp"
 done

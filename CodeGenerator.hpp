@@ -1,6 +1,6 @@
 #ifndef CODE_GENERTOR_HPP
 #define CODE_GENERTOR_HPP
-#define DEBUG 1
+#define DEBUG 0
 
 #include "NodeAnalyser.hpp"
 #include <deque>
@@ -250,8 +250,7 @@ public:
         if (DEBUG)
             cout << "Compst" << endl;
 
-        translateDefList(node->child[1]);
-        return translateStmtList(node->child[2]);
+        return translateDefList(node->child[1]) + translateStmtList(node->child[2]);
     }
 
     /*
@@ -345,7 +344,7 @@ public:
       Def DefList
     | %empty
     */
-    void translateDefList(TreeNode *node)
+    string translateDefList(TreeNode *node)
     {
         if (DEBUG)
             cout << "DefList" << endl;
@@ -353,22 +352,22 @@ public:
         if (node->child.size() == 2)
         {
             // Def DefList
-            translateDef(node->child[0]);
-            translateDefList(node->child[1]);
+            return translateDef(node->child[0]) + translateDefList(node->child[1]);
         }
+        return "";
     }
 
     /*
     Def: 
       Specifier DecList SEMI 
     */
-    void translateDef(TreeNode *node)
+    string translateDef(TreeNode *node)
     {
         if (DEBUG)
             cout << "Def" << endl;
 
         translateSpecifier(node->child[0]);
-        translateDecList(node->child[1]);
+        return translateDecList(node->child[1]);
     }
 
     /*
@@ -376,16 +375,16 @@ public:
       Dec
     | Dec COMMA DecList
     */
-    void translateDecList(TreeNode *node)
+    string translateDecList(TreeNode *node)
     {
         if (DEBUG)
             cout << "DecList" << endl;
 
-        out << translateDec(node->child[0]);
         if (node->child.size() == 3)
         {
-            translateDecList(node->child[2]);
+            return translateDec(node->child[0]) + translateDecList(node->child[2]);
         }
+        return translateDec(node->child[0]);
     }
 
     /*
@@ -397,12 +396,12 @@ public:
     {
         if (DEBUG)
             cout << "Dec" << endl;
-
-        translateVarDec(node->child[0]);
+        
+        // translateVarDec(node->child[0]);
         if (node->child.size() == 3)
         {
-            string v = createVar();
-            return translateExp(node->child[2], v);
+            string tp = createTemp();
+            return translateExp(node->child[2], tp);
         }
         return "";
     }
