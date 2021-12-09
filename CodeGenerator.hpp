@@ -6,16 +6,11 @@
 #include <deque>
 
 int tCounter = 0;
-int vCounter = 0;
 int lCounter = 0;
 
 using std::deque;
 using std::endl;
-using std::map;
 using std::string;
-using std::to_string;
-
-map<string, string> vmap;
 
 void function_init()
 {
@@ -29,11 +24,6 @@ void function_init()
     write->returnType = int_type;
     write->varlist.push_back(int_type);
     symbolTable["write"] = write;
-}
-
-string createVar()
-{
-    return "v" + to_string(vCounter++);
 }
 
 string createTemp()
@@ -461,8 +451,8 @@ public:
             {
                 string name = createTemp();
                 string code1 = translateExp(node->child[2], name);
-                string code2 = node->child[0]->child[0]->data + " := " + name + "\n";
-                string code3 = place + " := " + node->child[0]->child[0]->data + "\n";
+                string code2 = vmap[node->child[0]->child[0]->data] + " := " + name + "\n";
+                string code3 = place + " := " + vmap[node->child[0]->child[0]->data] + "\n";
                 if (DEBUG)
                 {
                     cout << code1 + code2 + code3;
