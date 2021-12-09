@@ -371,6 +371,20 @@ public:
             // RETURN Exp SEMI
             if (DEBUG)
                 cout << "    Return" << endl;
+            if (node->child[1]->child.size() == 1)
+            {
+                string v = translateExp(node->child[1], "");
+
+                // dmap
+                if (v[0] != '#')
+                {
+                    DNode *root = new DNode("return " + v);
+                    root->adj.push_back(dmap[v]);
+                    graphRoots.push_back(root);
+                }
+
+                return "RETURN " + v + "\n";
+            }
 
             string tp = createTemp();
 
