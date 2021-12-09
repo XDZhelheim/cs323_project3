@@ -229,6 +229,10 @@ public:
                 print_type_3(id->pos);
                 return new Type(Category::ERROR_VAL);
             }
+            if (vmap.count(node->child[0]->data) == 0)
+            {
+                vmap[node->child[0]->data] = createVar();
+            }
             if (specifier->category == Category::STRUCTURE_VAL)
             {
                 Type *spec = new Type(Category::STRUCTURE_VAL);
@@ -638,10 +642,6 @@ public:
                     if (t->category == Category::STRUCTURE_DEF)
                     {
                         return new Type(Category::ERROR_VAL);
-                    }
-                    if (vmap.count(node->child[0]->data) == 0)
-                    {
-                        vmap[node->child[0]->data] = createVar();
                     }
                     return t;
                 }

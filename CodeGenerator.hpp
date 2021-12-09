@@ -188,9 +188,7 @@ public:
             translateVarDec(node->child[0]);
             return "";
         }
-        string v = createVar();
-        vmap[node->child[0]->name] = v;
-        return v;
+        return vmap[node->child[0]->data];
     }
 
     /*
@@ -489,9 +487,6 @@ public:
         }
         else if (node->child.size() == 3)
         {
-            // cout<<"----"<<node->child[0]->name<<endl;
-            // cout<<"----"<<node->child[1]->name<<endl;
-            // cout<<"----"<<node->child[2]->name<<endl;
             if (node->child[1]->child.size() == 0 && node->child[2]->child.size() == 0)
             {
                 if (node->child[0]->data == "read")
