@@ -12,19 +12,6 @@ using std::to_string;
 
 map<string, Type *> symbolTable;
 
-// from proj3
-
-map<string, string> vmap;
-
-int vCounter = 0;
-
-string createVar()
-{
-    return "v" + to_string(vCounter++);
-}
-
-// proj3
-
 bool isArithmatic(string name)
 {
     return name == "PLUS" || name == "MINUS" || name == "MUL" || name == "DIV";
@@ -228,10 +215,6 @@ public:
             {
                 print_type_3(id->pos);
                 return new Type(Category::ERROR_VAL);
-            }
-            if (vmap.count(node->child[0]->data) == 0)
-            {
-                vmap[node->child[0]->data] = createVar();
             }
             if (specifier->category == Category::STRUCTURE_VAL)
             {

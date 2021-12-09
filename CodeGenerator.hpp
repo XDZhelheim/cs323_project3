@@ -5,12 +5,29 @@
 #include "NodeAnalyser.hpp"
 #include <deque>
 
+int vCounter = 0;
 int tCounter = 0;
 int lCounter = 0;
 
 using std::deque;
 using std::endl;
 using std::string;
+
+class DNode {
+public:
+    string name;
+    deque<DNode*> adj;
+
+    bool visited;
+
+    DNode(string name) {
+        this->name = name;
+        this->visited = false;
+    }
+};
+
+map<string, DNode*> dmap;
+deque<DNode*> graphRoots;
 
 void function_init()
 {
@@ -24,6 +41,13 @@ void function_init()
     write->returnType = int_type;
     write->varlist.push_back(int_type);
     symbolTable["write"] = write;
+}
+
+map<string, string> vmap;
+
+string createVar()
+{
+    return "v" + to_string(vCounter++);
 }
 
 string createTemp()
@@ -188,7 +212,17 @@ public:
             translateVarDec(node->child[0]);
             return "";
         }
-        return vmap[node->child[0]->data];
+
+        string varName = node->child[0]->data;
+        if (vmap.count(varName) == 0)
+        {
+            vmap[varName] = createVar();
+        }
+
+        if (dmap.count(varName) == 0) {
+            dmap[varName] = new DNode(varName);
+        }
+        return vmap[varName];
     }
 
     /*
