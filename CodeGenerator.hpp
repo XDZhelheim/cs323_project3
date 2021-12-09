@@ -1,6 +1,6 @@
 #ifndef CODE_GENERTOR_HPP
 #define CODE_GENERTOR_HPP
-#define DEBUG 1
+#define DEBUG 0
 
 #include "NodeAnalyser.hpp"
 #include <deque>
