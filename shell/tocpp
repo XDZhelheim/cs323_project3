@@ -1,0 +1,13 @@
+#!/bin/zsh
+
+if [ $# -gt 0 ]
+then
+    rm -r test/*.cpp
+    exit
+fi
+
+for i in `ls test/*.spl`
+do
+    echo "#include <io.hpp>" > "$i.cpp"
+    cat $i >> "$i.cpp"
+done

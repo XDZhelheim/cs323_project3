@@ -1,0 +1,3 @@
+#!/bin/zsh
+
+rm -rf sample/*.ir sample/*.out test/*.ir test/*.out irsim.log

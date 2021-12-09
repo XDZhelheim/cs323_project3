@@ -7,4 +7,4 @@ then
 fi
 
 bin/splc test/test_3_r"$1".spl || exit
-sim/irsim_mac test/test_3_r"$1".ir
+sim/irsim_mac test/test_3_r"$1".ir -i "$2"
