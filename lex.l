@@ -109,7 +109,7 @@ return          { yylval = create_node("RETURN", yylloc.first_line); return RETU
 "/*" {
     char c = 0;
     char buffer;
-    while (buffer = yyinput()) {
+    while ((buffer = yyinput())) {
         if (c == '*' && buffer == '/') {
             yycolno += 2;
             break;

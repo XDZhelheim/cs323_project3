@@ -1,6 +1,6 @@
 #ifndef CODE_GENERTOR_HPP
 #define CODE_GENERTOR_HPP
-#define DEBUG 0
+#define DEBUG 1
 
 #include "NodeAnalyser.hpp"
 #include <deque>
@@ -59,6 +59,9 @@ public:
     */
     void translateProgram(TreeNode *node)
     {
+        if (DEBUG)
+            cout << "Program" << endl;
+
         translateExtDefList(node->child[0]);
     }
 
@@ -69,6 +72,9 @@ public:
     */
     void translateExtDefList(TreeNode *node)
     {
+        if (DEBUG)
+            cout << "ExtDefList" << endl;
+
         if (node->child.empty())
         {
             return;
@@ -85,6 +91,9 @@ public:
     */
     void translateExtDef(TreeNode *node)
     {
+        if (DEBUG)
+            cout << "ExtDef" << endl;
+            
         if (node->child.size() == 2)
         {
             // Specifier SEMI
@@ -112,6 +121,9 @@ public:
     */
     void translateExtDecList(TreeNode *node)
     {
+        if (DEBUG)
+            cout << "ExtDecList" << endl;
+
         translateVarDec(node->child[0]);
 
         if (node->child.size() == 3)
@@ -128,6 +140,9 @@ public:
     */
     void translateSpecifier(TreeNode *node)
     {
+        if (DEBUG)
+            cout << "Specifier" << endl;
+
         if (node->child[0]->child.empty())
         {
             return;
@@ -146,6 +161,9 @@ public:
     */
     void translateStructSpecifier(TreeNode *node)
     {
+        if (DEBUG)
+            cout << "StructSpecifier" << endl;
+
         //! not implemented
         if (node->child.size() == 5)
         {
@@ -159,17 +177,20 @@ public:
       ID
     | VarDec LB INT RB
     */
-    void translateVarDec(TreeNode *node)
+    string translateVarDec(TreeNode *node)
     {
+        if (DEBUG)
+            cout << "VarDec" << endl;
+
         if (node->child.size() == 4)
         {
             //! not implemented
             translateVarDec(node->child[0]);
+            return "";
         }
-        else
-        {
-            vmap[node->child[0]->name] = "v" + to_string(vCounter++);
-        }
+        string v = createVar();
+        vmap[node->child[0]->name] = v;
+        return v;
     }
 
     /*
@@ -179,12 +200,15 @@ public:
     */
     void translateFunDec(TreeNode *node)
     {
+        if (DEBUG)
+            cout << "FunDec" << endl;
+
         out << "FUNCTION " << node->child[0]->data << " :" << endl;
 
         if (node->child.size() == 4)
         {
             // ID LP VarList RP
-            translateVarList(node->child[2]);
+            out << translateVarList(node->child[2]);
         }
     }
 
@@ -193,24 +217,30 @@ public:
       ParamDec COMMA VarList
     | ParamDec
     */
-    void translateVarList(TreeNode *node)
+    string translateVarList(TreeNode *node)
     {
-        translateParamDec(node->child[0]);
+        if (DEBUG)
+            cout << "VarList" << endl;
+
         if (node->child.size() == 3)
         {
             // ParamDec COMMA VarList
-            translateVarList(node->child[2]);
+            return translateParamDec(node->child[0]) + translateVarList(node->child[2]);
         }
+        return translateParamDec(node->child[0]);
     }
 
     /*
     ParamDec: 
       Specifier VarDec
     */
-    void translateParamDec(TreeNode *node)
+    string translateParamDec(TreeNode *node)
     {
+        if (DEBUG)
+            cout << "ParamDec" << endl;
+
         translateSpecifier(node->child[0]);
-        translateVarDec(node->child[1]);
+        return "PARAM " + translateVarDec(node->child[1]) + "\n";
     }
 
     /*
@@ -219,6 +249,9 @@ public:
     */
     void translateCompSt(TreeNode *node)
     {
+        if (DEBUG)
+            cout << "Compst" << endl;
+
         translateDefList(node->child[1]);
         translateStmtList(node->child[2]);
     }
@@ -230,16 +263,16 @@ public:
     */
     void translateStmtList(TreeNode *node)
     {
+        if (DEBUG)
+            cout << "StmtList" << endl;
+
         if (node->child.empty())
         {
             return;
         }
-        else
-        {
-            // Stmt StmtList
-            out << translateStmt(node->child[0]);
-            translateStmtList(node->child[1]);
-        }
+        // Stmt StmtList
+        out << translateStmt(node->child[0]);
+        translateStmtList(node->child[1]);
     }
 
     /*
@@ -253,6 +286,11 @@ public:
     */
     string translateStmt(TreeNode *node)
     {
+        if (DEBUG) {
+            cout << "Stmt" << endl;
+            cout << "  Stmt childs = " << node->child.size() << endl;
+        }
+
         if (node->child.size() == 2)
         {
             // Exp SEMI
@@ -266,12 +304,14 @@ public:
         else if (node->child.size() == 3)
         {
             // RETURN Exp SEMI
+            if (DEBUG)
+                cout << "    Return" << endl;
             string tp = createTemp();
             return translateExp(node->child[1], tp) + "RETURN " + tp + "\n";
         }
         else if (node->child.size() == 5)
         {
-            // IF LP Exp RP Stmt & WHILE LP Exp RP Stmt
+            // IF LP Exp RP Stmt
             if (node->child[0]->name == "IF")
             {
                 string lb1 = createLabel();
@@ -280,7 +320,7 @@ public:
                 string code2 = translateStmt(node->child[4]) + "LABEL " + lb2 + " :\n";
                 return code1 + code2;
             }
-            else
+            else // WHILE LP Exp RP Stmt
             {
                 string lb1 = createLabel();
                 string lb2 = createLabel();
@@ -311,6 +351,9 @@ public:
     */
     void translateDefList(TreeNode *node)
     {
+        if (DEBUG)
+            cout << "DefList" << endl;
+
         if (node->child.size() == 2)
         {
             // Def DefList
@@ -325,6 +368,9 @@ public:
     */
     void translateDef(TreeNode *node)
     {
+        if (DEBUG)
+            cout << "Def" << endl;
+
         translateSpecifier(node->child[0]);
         translateDecList(node->child[1]);
     }
@@ -336,6 +382,9 @@ public:
     */
     void translateDecList(TreeNode *node)
     {
+        if (DEBUG)
+            cout << "DecList" << endl;
+
         out << translateDec(node->child[0]);
         if (node->child.size() == 3)
         {
@@ -350,6 +399,9 @@ public:
     */
     string translateDec(TreeNode *node)
     {
+        if (DEBUG)
+            cout << "Dec" << endl;
+
         translateVarDec(node->child[0]);
         if (node->child.size() == 3)
         {
@@ -388,6 +440,12 @@ public:
     */
     string translateExp(TreeNode *node, string place)
     {
+        if (DEBUG)
+        {
+            cout << "Exp" << endl;
+            cout << "  Exp childs = " << node->child.size() << endl;
+        }
+
         if (node->child.size() == 1)
         {
             if (node->child[0]->type == DataType::INT_TYPE)
@@ -431,6 +489,9 @@ public:
         }
         else if (node->child.size() == 3)
         {
+            // cout<<"----"<<node->child[0]->name<<endl;
+            // cout<<"----"<<node->child[1]->name<<endl;
+            // cout<<"----"<<node->child[2]->name<<endl;
             if (node->child[1]->child.size() == 0 && node->child[2]->child.size() == 0)
             {
                 if (node->child[0]->data == "read")
@@ -519,6 +580,9 @@ public:
                 }
                 return code1 + code2 + code3;
             }
+            else if (node->child[0]->name == "LP") {
+                return translateExp(node->child[1], place);
+            }
         }
         else
         {
@@ -562,6 +626,11 @@ public:
 
     string translateCondExp(TreeNode *node, string label_true, string label_false)
     {
+        if (DEBUG)
+        {
+            cout << "CondExp" << endl;
+            cout << "  CondExp childs = " << node->child.size() << endl;
+        }
         if (node->child.size() == 2)
         {
             return translateCondExp(node, label_false, label_true);
@@ -646,6 +715,9 @@ public:
     */
     string translateArgs(TreeNode *node, deque<string> &argList)
     {
+        if (DEBUG)
+            cout << "Args" << endl;
+
         if (node->child.size() == 1)
         {
             string v = createVar();
