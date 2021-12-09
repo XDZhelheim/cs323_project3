@@ -397,11 +397,11 @@ public:
         if (DEBUG)
             cout << "Dec" << endl;
         
-        // translateVarDec(node->child[0]);
+        string v = translateVarDec(node->child[0]);
         if (node->child.size() == 3)
         {
-            string tp = createTemp();
-            return translateExp(node->child[2], tp);
+            // string tp = createTemp();
+            return translateExp(node->child[2], v);
         }
         return "";
     }
@@ -484,7 +484,6 @@ public:
         }
         else if (node->child.size() == 3)
         {
-            cout<<"-----"<<node->child[1]->name<<endl;
             if (node->child[1]->child.size() == 0 && node->child[2]->child.size() == 0)
             {
                 if (node->child[0]->data == "read")

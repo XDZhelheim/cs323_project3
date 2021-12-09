@@ -108,3 +108,5 @@ temp*
 .idea/
 
 irsim.log
+
+*.cui
