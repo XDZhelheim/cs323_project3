@@ -1,6 +1,6 @@
 #ifndef CODE_GENERTOR_HPP
 #define CODE_GENERTOR_HPP
-#define DEBUG 0
+#define DEBUG 1
 #define DISABLE_SIMPLIFY 0
 
 #include "NodeAnalyser.hpp"
@@ -283,7 +283,9 @@ public:
         if (node->child.size() == 3)
         {
             // ParamDec COMMA VarList
-            return translateParamDec(node->child[0]) + translateVarList(node->child[2]);
+            string code1 = translateParamDec(node->child[0]);
+            string code2 = translateVarList(node->child[2]);
+            return code1 + code2;
         }
         return translateParamDec(node->child[0]);
     }
@@ -318,7 +320,9 @@ public:
         if (DEBUG)
             cout << "Compst" << endl;
 
-        return translateDefList(node->child[1]) + translateStmtList(node->child[2]);
+        string code1 = translateDefList(node->child[1]);
+        string code2 = translateStmtList(node->child[2]);
+        return code1 + code2;
     }
 
     /*
@@ -336,7 +340,9 @@ public:
             return "";
         }
         // Stmt StmtList
-        return translateStmt(node->child[0]) + translateStmtList(node->child[1]);
+        string code1 = translateStmt(node->child[0]);
+        string code2 = translateStmtList(node->child[1]);
+        return code1 + code2;
     }
 
     /*
@@ -442,7 +448,9 @@ public:
         if (node->child.size() == 2)
         {
             // Def DefList
-            return translateDef(node->child[0]) + translateDefList(node->child[1]);
+            string code1 = translateDef(node->child[0]);
+            string code2 = translateDefList(node->child[1]);
+            return code1 + code2;
         }
         return "";
     }
@@ -472,7 +480,9 @@ public:
 
         if (node->child.size() == 3)
         {
-            return translateDec(node->child[0]) + translateDecList(node->child[2]);
+            string code1 = translateDec(node->child[0]);
+            string code2 = translateDecList(node->child[2]);
+            return code1 + code2;
         }
         return translateDec(node->child[0]);
     }

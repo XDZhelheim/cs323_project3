@@ -1,0 +1,10 @@
+#!/bin/bash
+
+if [ ! -e bin ]
+then
+    make || exit
+    make trash || exit
+fi
+
+bin/splc test/test_3_r"$1".spl || exit
+sim/irsim test/test_3_r"$1".ir -i "$2"

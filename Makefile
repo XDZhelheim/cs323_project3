@@ -1,7 +1,7 @@
 ifeq ($(shell uname), Darwin) # macOS
 	CXXFLAGS=-ll -ly --std=c++11
 else
-	CXXFLAGS=-lfl -ly
+	CXXFLAGS=-lfl -ly --std=c++11
 endif
 
 CC=gcc
