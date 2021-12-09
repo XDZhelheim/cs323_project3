@@ -4,6 +4,7 @@
 
 #include "NodeAnalyser.hpp"
 #include <deque>
+#include <sstream>
 
 int vCounter = 0;
 int tCounter = 0;
@@ -11,23 +12,27 @@ int lCounter = 0;
 
 using std::deque;
 using std::endl;
+using std::istringstream;
+using std::ostream;
 using std::string;
 
-class DNode {
+class DNode
+{
 public:
     string name;
-    deque<DNode*> adj;
+    deque<DNode *> adj;
 
     bool visited;
 
-    DNode(string name) {
+    DNode(string name)
+    {
         this->name = name;
         this->visited = false;
     }
 };
 
-map<string, DNode*> dmap;
-deque<DNode*> graphRoots;
+map<string, DNode *> dmap;
+deque<DNode *> graphRoots;
 
 void function_init()
 {
@@ -60,10 +65,21 @@ string createLabel()
     return "label" + to_string(lCounter++);
 }
 
+ostream &operator<<(ostream &out, vector<string> &v)
+{
+    for (auto line : v)
+    {
+        out << line << endl;
+    }
+    return out;
+}
+
 class Generator
 {
 private:
     TreeNode *root;
+
+    string code;
 
 public:
     Generator(TreeNode *node, string path)
@@ -75,6 +91,8 @@ public:
     void generate()
     {
         translateProgram(root);
+        vector<string> result = simplify();
+        out << result;
     }
 
     /*
@@ -117,7 +135,7 @@ public:
     {
         if (DEBUG)
             cout << "ExtDef" << endl;
-            
+
         if (node->child.size() == 2)
         {
             // Specifier SEMI
@@ -133,7 +151,7 @@ public:
             else
             {
                 translateFunDec(node->child[1]);
-                out << translateCompSt(node->child[2]);
+                code += translateCompSt(node->child[2]);
             }
         }
     }
@@ -219,7 +237,8 @@ public:
             vmap[varName] = createVar();
         }
 
-        if (dmap.count(varName) == 0) {
+        if (dmap.count(varName) == 0)
+        {
             dmap[varName] = new DNode(varName);
         }
         return vmap[varName];
@@ -235,12 +254,12 @@ public:
         if (DEBUG)
             cout << "FunDec" << endl;
 
-        out << "FUNCTION " << node->child[0]->data << " :" << endl;
+        code += "FUNCTION " + node->child[0]->data + " :" + "\n";
 
         if (node->child.size() == 4)
         {
             // ID LP VarList RP
-            out << translateVarList(node->child[2]);
+            code += translateVarList(node->child[2]);
         }
     }
 
@@ -316,7 +335,8 @@ public:
     */
     string translateStmt(TreeNode *node)
     {
-        if (DEBUG) {
+        if (DEBUG)
+        {
             cout << "Stmt" << endl;
             cout << "  Stmt childs = " << node->child.size() << endl;
         }
@@ -430,7 +450,7 @@ public:
     {
         if (DEBUG)
             cout << "Dec" << endl;
-        
+
         string v = translateVarDec(node->child[0]);
         if (node->child.size() == 3)
         {
@@ -606,7 +626,8 @@ public:
                 }
                 return code1 + code2 + code3;
             }
-            else if (node->child[0]->name == "LP") {
+            else if (node->child[0]->name == "LP")
+            {
                 return translateExp(node->child[1], place);
             }
         }
@@ -634,12 +655,12 @@ public:
                 {
                     place = createTemp();
                 }
-                
+
                 if (DEBUG)
                 {
                     cout << code1 + code2 + place + " := CALL " + node->child[0]->data + "\n";
                 }
-                
+
                 return code1 + code2 + place + " := CALL " + node->child[0]->data + "\n";
             }
         }
@@ -765,6 +786,67 @@ public:
             string code2 = translateArgs(node->child[2], argList);
             return code1 + code2;
         }
+    }
+
+    vector<string> simplify()
+    {
+        while (graphRoots.size() > 0)
+        {
+            DNode *curr = graphRoots.front();
+            graphRoots.pop_front();
+            if (curr->visited)
+            {
+                continue;
+            }
+            curr->visited = true;
+            for (auto subnode : curr->adj)
+            {
+                if (!subnode->visited)
+                {
+                    graphRoots.push_back(subnode);
+                }
+            }
+        }
+
+        vector<string> uselessNode;
+
+        for (auto item : dmap)
+        {
+            if (!item.second->visited)
+            {
+                uselessNode.push_back(item.first);
+            }
+        }
+        
+        vector<string> resultLines;
+        istringstream in(code);
+        string line;
+        while (getline(in, line))
+        {
+            if(!contains(line, uselessNode))
+            {
+                resultLines.push_back(line);
+            }
+        }
+
+        return resultLines;
+    }
+
+    bool contains(string line, vector<string> &uselessNode)
+    {
+        istringstream strin(line);
+        string subs;
+        while (getline(strin, subs))
+        {
+            for (auto item : uselessNode)
+            {
+                if (subs == item)
+                {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 };
 
