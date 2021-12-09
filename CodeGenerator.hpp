@@ -1,6 +1,6 @@
 #ifndef CODE_GENERTOR_HPP
 #define CODE_GENERTOR_HPP
-#define DEBUG 0
+#define DEBUG 1
 
 #include "NodeAnalyser.hpp"
 #include <deque>
@@ -109,7 +109,7 @@ public:
             else
             {
                 translateFunDec(node->child[1]);
-                translateCompSt(node->child[2]);
+                out << translateCompSt(node->child[2]);
             }
         }
     }
@@ -245,13 +245,13 @@ public:
     CompSt: 
       LC DefList StmtList RC
     */
-    void translateCompSt(TreeNode *node)
+    string translateCompSt(TreeNode *node)
     {
         if (DEBUG)
             cout << "Compst" << endl;
 
         translateDefList(node->child[1]);
-        translateStmtList(node->child[2]);
+        return translateStmtList(node->child[2]);
     }
 
     /*
@@ -259,18 +259,17 @@ public:
       Stmt StmtList
     | %empty
     */
-    void translateStmtList(TreeNode *node)
+    string translateStmtList(TreeNode *node)
     {
         if (DEBUG)
             cout << "StmtList" << endl;
 
         if (node->child.empty())
         {
-            return;
+            return "";
         }
         // Stmt StmtList
-        out << translateStmt(node->child[0]);
-        translateStmtList(node->child[1]);
+        return translateStmt(node->child[0]) + translateStmtList(node->child[1]);
     }
 
     /*
@@ -297,7 +296,7 @@ public:
         else if (node->child.size() == 1)
         {
             // CompSt
-            translateCompSt(node->child[0]);
+            return translateCompSt(node->child[0]);
         }
         else if (node->child.size() == 3)
         {
@@ -339,7 +338,6 @@ public:
             string code3 = translateStmt(node->child[6]) + "LABEL " + lb3 + " :\n";
             return code1 + code2 + code3;
         }
-        return "";
     }
 
     /*
@@ -487,6 +485,7 @@ public:
         }
         else if (node->child.size() == 3)
         {
+            cout<<"-----"<<node->child[1]->name<<endl;
             if (node->child[1]->child.size() == 0 && node->child[2]->child.size() == 0)
             {
                 if (node->child[0]->data == "read")
