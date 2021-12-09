@@ -1,6 +1,6 @@
 #ifndef CODE_GENERTOR_HPP
 #define CODE_GENERTOR_HPP
-#define DEBUG 1
+#define DEBUG 0
 
 #include "NodeAnalyser.hpp"
 #include <deque>
@@ -179,7 +179,7 @@ public:
     */
     void translateFunDec(TreeNode *node)
     {
-        // TODO
+        out << "FUNCTION " << node->child[0]->data << " :" << endl;
 
         if (node->child.size() == 4)
         {
@@ -256,8 +256,7 @@ public:
         if (node->child.size() == 2)
         {
             // Exp SEMI
-            string tp = createTemp();
-            return translateExp(node->child[0], tp);
+            return translateExp(node->child[0], "");
         }
         else if (node->child.size() == 1)
         {
@@ -272,9 +271,9 @@ public:
         }
         else if (node->child.size() == 5)
         {
+            // IF LP Exp RP Stmt & WHILE LP Exp RP Stmt
             if (node->child[0]->name == "IF")
             {
-                // IF LP Exp RP Stmt & WHILE LP Exp RP Stmt
                 string lb1 = createLabel();
                 string lb2 = createLabel();
                 string code1 = translateCondExp(node->child[2], lb1, lb2) + "LABEL " + lb1 + " :\n";
@@ -393,21 +392,27 @@ public:
         {
             if (node->child[0]->type == DataType::INT_TYPE)
             {
-                string name = createTemp();
                 if (DEBUG)
                 {
-                    cout << name + " := #" + to_string(strtol(node->child[0]->data.c_str(), NULL, 0)) + "\n";
+                    cout << place + " := #" + to_string(strtol(node->child[0]->data.c_str(), NULL, 0)) + "\n";
                 }
 
-                return name + " := #" + to_string(strtol(node->child[0]->data.c_str(), NULL, 0)) + "\n";
+                return place + " := #" + to_string(strtol(node->child[0]->data.c_str(), NULL, 0)) + "\n";
             }
             else
             {
                 if (DEBUG)
                 {
-                    cout << place + " := " + node->child[0]->data + "\n";
+                    cout << place + " := " + vmap[node->child[0]->data] + "\n";
                 }
-                return place + " := " + node->child[0]->data + "\n";
+                if (place.length())
+                {
+                    return place + " := " + vmap[node->child[0]->data] + "\n";
+                }
+                else
+                {
+                    return "";
+                }
             }
         }
         else if (node->child.size() == 2)
@@ -421,7 +426,6 @@ public:
                 {
                     cout << code1 + code2;
                 }
-
                 return code1 + code2;
             }
         }
@@ -452,7 +456,11 @@ public:
                 string name = createTemp();
                 string code1 = translateExp(node->child[2], name);
                 string code2 = vmap[node->child[0]->child[0]->data] + " := " + name + "\n";
-                string code3 = place + " := " + vmap[node->child[0]->child[0]->data] + "\n";
+                string code3;
+                if (place.length())
+                {
+                    code3 = place + " := " + vmap[node->child[0]->child[0]->data] + "\n";
+                }
                 if (DEBUG)
                 {
                     cout << code1 + code2 + code3;
@@ -519,10 +527,9 @@ public:
                 string name = createTemp();
                 if (DEBUG)
                 {
-                    cout << translateExp(node->child[2], name) + "WRITE " + name + "\n";
-                    ;
+                    cout << translateExp(node->child[2]->child[0], name) + "WRITE " + name + "\n";
                 }
-                return translateExp(node->child[2], name) + "WRITE " + name + "\n";
+                return translateExp(node->child[2]->child[0], name) + "WRITE " + name + "\n";
             }
             else
             {
