@@ -1,6 +1,7 @@
 #ifndef CODE_GENERTOR_HPP
 #define CODE_GENERTOR_HPP
 #define DEBUG 0
+#define DISABLE_SIMPLIFY 0
 
 #include "NodeAnalyser.hpp"
 #include <deque>
@@ -95,8 +96,13 @@ public:
     void generate()
     {
         translateProgram(root);
-        vector<string> result = simplify();
-        out << result;
+        if (DISABLE_SIMPLIFY) {
+            out << code;
+        }
+        else {
+            vector<string> result = simplify();
+            out << result;
+        }
     }
 
     /*
@@ -290,7 +296,15 @@ public:
             cout << "ParamDec" << endl;
 
         translateSpecifier(node->child[0]);
-        return "PARAM " + translateVarDec(node->child[1]) + "\n";
+
+        string v = translateVarDec(node->child[1]);
+
+        // dmap
+        DNode* root = new DNode("param " + v);
+        root->adj.push_back(dmap[v]);
+        graphRoots.push_back(root);
+
+        return "PARAM " + v + "\n";
     }
 
     /*
@@ -355,7 +369,24 @@ public:
             // RETURN Exp SEMI
             if (DEBUG)
                 cout << "    Return" << endl;
+            // if (node->child[1]->child.size() == 1) {
+            //     string v = translateExp(node->child[1], "");
+
+            //     // dmap
+            //     DNode* root = new DNode("return " + v);
+            //     root->adj.push_back(dmap[v]);
+            //     graphRoots.push_back(root);
+
+            //     return "RETURN " + v + "\n";
+            // }
+
             string tp = createTemp();
+
+            // dmap
+            DNode* root = new DNode("return " + tp);
+            root->adj.push_back(dmap[tp]);
+            graphRoots.push_back(root);
+
             return translateExp(node->child[1], tp) + "RETURN " + tp + "\n";
         }
         else if (node->child.size() == 5)
@@ -503,10 +534,19 @@ public:
                     cout << place + " := #" + to_string(strtol(node->child[0]->data.c_str(), NULL, 0)) + "\n";
                 }
 
+                if (place.length() == 0) {
+                    return "#" + to_string(strtol(node->child[0]->data.c_str(), NULL, 0));
+                }
+
                 return place + " := #" + to_string(strtol(node->child[0]->data.c_str(), NULL, 0)) + "\n";
             }
             else
-            {
+            { // ID
+                if (place.length()) {
+                    // dmap
+                    dmap[place]->adj.push_back(dmap[vmap[node->child[0]->data]]);
+                }
+
                 if (DEBUG)
                 {
                     cout << place + " := " + vmap[node->child[0]->data] + "\n";
@@ -517,7 +557,7 @@ public:
                 }
                 else
                 {
-                    return "";
+                    return vmap[node->child[0]->data];
                 }
             }
         }
@@ -558,6 +598,10 @@ public:
                     {
                         cout << place + " := CALL " + node->child[0]->data + "\n";
                     }
+
+                    // dmap
+                    graphRoots.push_back(dmap[place]);
+
                     return place + " := CALL " + node->child[0]->data + "\n";
                 }
             }
@@ -693,6 +737,9 @@ public:
                 {
                     cout << code1 + code2 + place + " := CALL " + node->child[0]->data + "\n";
                 }
+
+                // dmap
+                graphRoots.push_back(dmap[place]);
 
                 return code1 + code2 + place + " := CALL " + node->child[0]->data + "\n";
             }
@@ -850,6 +897,12 @@ public:
         {
             string v = createVar();
             argList.push_front(v);
+            
+            // dmap
+            DNode* root = new DNode("arg " + v);
+            root->adj.push_back(dmap[v]);
+            graphRoots.push_back(root);
+
             return translateExp(node->child[0], v);
         }
         else
@@ -857,6 +910,12 @@ public:
             // Exp COMMA Args
             string v = createVar();
             argList.push_front(v);
+
+            // dmap
+            DNode* root = new DNode("arg " + v);
+            root->adj.push_back(dmap[v]);
+            graphRoots.push_back(root);
+
             string code1 = translateExp(node->child[0], v);
             string code2 = translateArgs(node->child[2], argList);
             return code1 + code2;
