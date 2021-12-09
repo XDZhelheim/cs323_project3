@@ -96,10 +96,12 @@ public:
     void generate()
     {
         translateProgram(root);
-        if (DISABLE_SIMPLIFY) {
+        if (DISABLE_SIMPLIFY)
+        {
             out << code;
         }
-        else {
+        else
+        {
             vector<string> result = simplify();
             out << result;
         }
@@ -300,7 +302,7 @@ public:
         string v = translateVarDec(node->child[1]);
 
         // dmap
-        DNode* root = new DNode("param " + v);
+        DNode *root = new DNode("param " + v);
         root->adj.push_back(dmap[v]);
         graphRoots.push_back(root);
 
@@ -369,21 +371,11 @@ public:
             // RETURN Exp SEMI
             if (DEBUG)
                 cout << "    Return" << endl;
-            // if (node->child[1]->child.size() == 1) {
-            //     string v = translateExp(node->child[1], "");
-
-            //     // dmap
-            //     DNode* root = new DNode("return " + v);
-            //     root->adj.push_back(dmap[v]);
-            //     graphRoots.push_back(root);
-
-            //     return "RETURN " + v + "\n";
-            // }
 
             string tp = createTemp();
 
             // dmap
-            DNode* root = new DNode("return " + tp);
+            DNode *root = new DNode("return " + tp);
             root->adj.push_back(dmap[tp]);
             graphRoots.push_back(root);
 
@@ -534,7 +526,8 @@ public:
                     cout << place + " := #" + to_string(strtol(node->child[0]->data.c_str(), NULL, 0)) + "\n";
                 }
 
-                if (place.length() == 0) {
+                if (place.length() == 0)
+                {
                     return "#" + to_string(strtol(node->child[0]->data.c_str(), NULL, 0));
                 }
 
@@ -542,7 +535,8 @@ public:
             }
             else
             { // ID
-                if (place.length()) {
+                if (place.length())
+                {
                     // dmap
                     dmap[place]->adj.push_back(dmap[vmap[node->child[0]->data]]);
                 }
@@ -572,7 +566,7 @@ public:
                 {
                     cout << code1 + code2;
                 }
-                
+
                 // dmap
                 dmap[place]->adj.push_back(dmap[name]);
 
@@ -713,7 +707,7 @@ public:
                 }
 
                 // dmap
-                DNode* root = new DNode("write " + name);
+                DNode *root = new DNode("write " + name);
                 root->adj.push_back(dmap[name]);
                 graphRoots.push_back(root);
 
@@ -791,13 +785,13 @@ public:
                 string code1 = translateExp(node->child[0], name1);
                 string code2 = translateExp(node->child[2], name2);
                 string code3 = "IF " + name1 + " == " + name2 + " GOTO " + label_true + "\nGOTO " + label_false + "\n";
-                
+
                 // dmap
-                DNode* root = new DNode("if " + name1 + node->child[1]->name + name2);
+                DNode *root = new DNode("if " + name1 + node->child[1]->name + name2);
                 root->adj.push_back(dmap[name1]);
                 root->adj.push_back(dmap[name2]);
                 graphRoots.push_back(root);
-                
+
                 return code1 + code2 + code3;
             }
             else if (node->child[1]->name == "NE")
@@ -807,13 +801,13 @@ public:
                 string code1 = translateExp(node->child[0], name1);
                 string code2 = translateExp(node->child[2], name2);
                 string code3 = "IF " + name1 + " != " + name2 + " GOTO " + label_true + "\nGOTO " + label_false + "\n";
-                
+
                 // dmap
-                DNode* root = new DNode("if " + name1 + node->child[1]->name + name2);
+                DNode *root = new DNode("if " + name1 + node->child[1]->name + name2);
                 root->adj.push_back(dmap[name1]);
                 root->adj.push_back(dmap[name2]);
                 graphRoots.push_back(root);
-                
+
                 return code1 + code2 + code3;
             }
             else if (node->child[1]->name == "GT")
@@ -823,13 +817,13 @@ public:
                 string code1 = translateExp(node->child[0], name1);
                 string code2 = translateExp(node->child[2], name2);
                 string code3 = "IF " + name1 + " > " + name2 + " GOTO " + label_true + "\nGOTO " + label_false + "\n";
-                
+
                 // dmap
-                DNode* root = new DNode("if " + name1 + node->child[1]->name + name2);
+                DNode *root = new DNode("if " + name1 + node->child[1]->name + name2);
                 root->adj.push_back(dmap[name1]);
                 root->adj.push_back(dmap[name2]);
                 graphRoots.push_back(root);
-                
+
                 return code1 + code2 + code3;
             }
             else if (node->child[1]->name == "GE")
@@ -839,13 +833,13 @@ public:
                 string code1 = translateExp(node->child[0], name1);
                 string code2 = translateExp(node->child[2], name2);
                 string code3 = "IF " + name1 + " >= " + name2 + " GOTO " + label_true + "\nGOTO " + label_false + "\n";
-                
+
                 // dmap
-                DNode* root = new DNode("if " + name1 + node->child[1]->name + name2);
+                DNode *root = new DNode("if " + name1 + node->child[1]->name + name2);
                 root->adj.push_back(dmap[name1]);
                 root->adj.push_back(dmap[name2]);
                 graphRoots.push_back(root);
-                
+
                 return code1 + code2 + code3;
             }
             else if (node->child[1]->name == "LT")
@@ -855,13 +849,13 @@ public:
                 string code1 = translateExp(node->child[0], name1);
                 string code2 = translateExp(node->child[2], name2);
                 string code3 = "IF " + name1 + " < " + name2 + " GOTO " + label_true + "\nGOTO " + label_false + "\n";
-                
+
                 // dmap
-                DNode* root = new DNode("if " + name1 + node->child[1]->name + name2);
+                DNode *root = new DNode("if " + name1 + node->child[1]->name + name2);
                 root->adj.push_back(dmap[name1]);
                 root->adj.push_back(dmap[name2]);
                 graphRoots.push_back(root);
-                
+
                 return code1 + code2 + code3;
             }
             else
@@ -871,13 +865,13 @@ public:
                 string code1 = translateExp(node->child[0], name1);
                 string code2 = translateExp(node->child[2], name2);
                 string code3 = "IF " + name1 + " <= " + name2 + " GOTO " + label_true + "\nGOTO " + label_false + "\n";
-                
+
                 // dmap
-                DNode* root = new DNode("if " + name1 + node->child[1]->name + name2);
+                DNode *root = new DNode("if " + name1 + node->child[1]->name + name2);
                 root->adj.push_back(dmap[name1]);
                 root->adj.push_back(dmap[name2]);
                 graphRoots.push_back(root);
-                
+
                 return code1 + code2 + code3;
             }
         }
@@ -897,9 +891,9 @@ public:
         {
             string v = createVar();
             argList.push_front(v);
-            
+
             // dmap
-            DNode* root = new DNode("arg " + v);
+            DNode *root = new DNode("arg " + v);
             root->adj.push_back(dmap[v]);
             graphRoots.push_back(root);
 
@@ -912,7 +906,7 @@ public:
             argList.push_front(v);
 
             // dmap
-            DNode* root = new DNode("arg " + v);
+            DNode *root = new DNode("arg " + v);
             root->adj.push_back(dmap[v]);
             graphRoots.push_back(root);
 
@@ -951,13 +945,13 @@ public:
                 uselessNode.push_back(item.first);
             }
         }
-        
+
         vector<string> resultLines;
         istringstream in(code);
         string line;
         while (getline(in, line))
         {
-            if(!contains(line, uselessNode))
+            if (!contains(line, uselessNode))
             {
                 resultLines.push_back(line);
             }
