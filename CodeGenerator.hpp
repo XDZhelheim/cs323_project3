@@ -794,96 +794,252 @@ public:
             }
             else if (node->child[1]->name == "EQ")
             {
-                string name1 = createTemp();
-                string name2 = createTemp();
-                string code1 = translateExp(node->child[0], name1);
-                string code2 = translateExp(node->child[2], name2);
+                string name1;
+                string code1;
+                if (node->child[0]->child.size() == 1)
+                {
+                    name1 = translateExp(node->child[0], "");
+                }
+                else
+                {
+                    name1 = createTemp();
+                    code1 = translateExp(node->child[0], name1);
+                }
+
+                string name2;
+                string code2;
+                if (node->child[2]->child.size() == 1)
+                {
+                    name2 = translateExp(node->child[2], "");
+                }
+                else
+                {
+                    name2 = createTemp();
+                    code2 = translateExp(node->child[2], name2);
+                }
+
                 string code3 = "IF " + name1 + " == " + name2 + " GOTO " + label_true + "\nGOTO " + label_false + "\n";
 
                 // dmap
                 DNode *root = new DNode("if " + name1 + node->child[1]->name + name2);
-                root->adj.push_back(dmap[name1]);
-                root->adj.push_back(dmap[name2]);
+                if (name1[0] != '#')
+                {
+                    root->adj.push_back(dmap[name1]);
+                }
+                if (name2[0] != '#')
+                {
+                    root->adj.push_back(dmap[name2]);
+                }
                 graphRoots.push_back(root);
 
                 return code1 + code2 + code3;
             }
             else if (node->child[1]->name == "NE")
             {
-                string name1 = createTemp();
-                string name2 = createTemp();
-                string code1 = translateExp(node->child[0], name1);
-                string code2 = translateExp(node->child[2], name2);
+                string name1;
+                string code1;
+                if (node->child[0]->child.size() == 1)
+                {
+                    name1 = translateExp(node->child[0], "");
+                }
+                else
+                {
+                    name1 = createTemp();
+                    code1 = translateExp(node->child[0], name1);
+                }
+
+                string name2;
+                string code2;
+                if (node->child[2]->child.size() == 1)
+                {
+                    name2 = translateExp(node->child[2], "");
+                }
+                else
+                {
+                    name2 = createTemp();
+                    code2 = translateExp(node->child[2], name2);
+                }
+
                 string code3 = "IF " + name1 + " != " + name2 + " GOTO " + label_true + "\nGOTO " + label_false + "\n";
 
                 // dmap
                 DNode *root = new DNode("if " + name1 + node->child[1]->name + name2);
-                root->adj.push_back(dmap[name1]);
-                root->adj.push_back(dmap[name2]);
+                if (name1[0] != '#')
+                {
+                    root->adj.push_back(dmap[name1]);
+                }
+                if (name2[0] != '#')
+                {
+                    root->adj.push_back(dmap[name2]);
+                }
                 graphRoots.push_back(root);
 
                 return code1 + code2 + code3;
             }
             else if (node->child[1]->name == "GT")
             {
-                string name1 = createTemp();
-                string name2 = createTemp();
-                string code1 = translateExp(node->child[0], name1);
-                string code2 = translateExp(node->child[2], name2);
+                string name1;
+                string code1;
+                if (node->child[0]->child.size() == 1)
+                {
+                    name1 = translateExp(node->child[0], "");
+                }
+                else
+                {
+                    name1 = createTemp();
+                    code1 = translateExp(node->child[0], name1);
+                }
+
+                string name2;
+                string code2;
+                if (node->child[2]->child.size() == 1)
+                {
+                    name2 = translateExp(node->child[2], "");
+                }
+                else
+                {
+                    name2 = createTemp();
+                    code2 = translateExp(node->child[2], name2);
+                }
+
                 string code3 = "IF " + name1 + " > " + name2 + " GOTO " + label_true + "\nGOTO " + label_false + "\n";
 
                 // dmap
                 DNode *root = new DNode("if " + name1 + node->child[1]->name + name2);
-                root->adj.push_back(dmap[name1]);
-                root->adj.push_back(dmap[name2]);
+                if (name1[0] != '#')
+                {
+                    root->adj.push_back(dmap[name1]);
+                }
+                if (name2[0] != '#')
+                {
+                    root->adj.push_back(dmap[name2]);
+                }
                 graphRoots.push_back(root);
 
                 return code1 + code2 + code3;
             }
             else if (node->child[1]->name == "GE")
             {
-                string name1 = createTemp();
-                string name2 = createTemp();
-                string code1 = translateExp(node->child[0], name1);
-                string code2 = translateExp(node->child[2], name2);
+                string name1;
+                string code1;
+                if (node->child[0]->child.size() == 1)
+                {
+                    name1 = translateExp(node->child[0], "");
+                }
+                else
+                {
+                    name1 = createTemp();
+                    code1 = translateExp(node->child[0], name1);
+                }
+
+                string name2;
+                string code2;
+                if (node->child[2]->child.size() == 1)
+                {
+                    name2 = translateExp(node->child[2], "");
+                }
+                else
+                {
+                    name2 = createTemp();
+                    code2 = translateExp(node->child[2], name2);
+                }
+
                 string code3 = "IF " + name1 + " >= " + name2 + " GOTO " + label_true + "\nGOTO " + label_false + "\n";
 
                 // dmap
                 DNode *root = new DNode("if " + name1 + node->child[1]->name + name2);
-                root->adj.push_back(dmap[name1]);
-                root->adj.push_back(dmap[name2]);
+                if (name1[0] != '#')
+                {
+                    root->adj.push_back(dmap[name1]);
+                }
+                if (name2[0] != '#')
+                {
+                    root->adj.push_back(dmap[name2]);
+                }
                 graphRoots.push_back(root);
 
                 return code1 + code2 + code3;
             }
             else if (node->child[1]->name == "LT")
             {
-                string name1 = createTemp();
-                string name2 = createTemp();
-                string code1 = translateExp(node->child[0], name1);
-                string code2 = translateExp(node->child[2], name2);
+                string name1;
+                string code1;
+                if (node->child[0]->child.size() == 1)
+                {
+                    name1 = translateExp(node->child[0], "");
+                }
+                else
+                {
+                    name1 = createTemp();
+                    code1 = translateExp(node->child[0], name1);
+                }
+
+                string name2;
+                string code2;
+                if (node->child[2]->child.size() == 1)
+                {
+                    name2 = translateExp(node->child[2], "");
+                }
+                else
+                {
+                    name2 = createTemp();
+                    code2 = translateExp(node->child[2], name2);
+                }
+
                 string code3 = "IF " + name1 + " < " + name2 + " GOTO " + label_true + "\nGOTO " + label_false + "\n";
 
                 // dmap
                 DNode *root = new DNode("if " + name1 + node->child[1]->name + name2);
-                root->adj.push_back(dmap[name1]);
-                root->adj.push_back(dmap[name2]);
+                if (name1[0] != '#')
+                {
+                    root->adj.push_back(dmap[name1]);
+                }
+                if (name2[0] != '#')
+                {
+                    root->adj.push_back(dmap[name2]);
+                }
                 graphRoots.push_back(root);
 
                 return code1 + code2 + code3;
             }
             else
             {
-                string name1 = createTemp();
-                string name2 = createTemp();
-                string code1 = translateExp(node->child[0], name1);
-                string code2 = translateExp(node->child[2], name2);
+                string name1;
+                string code1;
+                if (node->child[0]->child.size() == 1)
+                {
+                    name1 = translateExp(node->child[0], "");
+                }
+                else
+                {
+                    name1 = createTemp();
+                    code1 = translateExp(node->child[0], name1);
+                }
+
+                string name2;
+                string code2;
+                if (node->child[2]->child.size() == 1)
+                {
+                    name2 = translateExp(node->child[2], "");
+                }
+                else
+                {
+                    name2 = createTemp();
+                    code2 = translateExp(node->child[2], name2);
+                }
+
                 string code3 = "IF " + name1 + " <= " + name2 + " GOTO " + label_true + "\nGOTO " + label_false + "\n";
 
                 // dmap
                 DNode *root = new DNode("if " + name1 + node->child[1]->name + name2);
-                root->adj.push_back(dmap[name1]);
-                root->adj.push_back(dmap[name2]);
+                if (name1[0] != '#')
+                {
+                    root->adj.push_back(dmap[name1]);
+                }
+                if (name2[0] != '#')
+                {
+                    root->adj.push_back(dmap[name2]);
+                }
                 graphRoots.push_back(root);
 
                 return code1 + code2 + code3;
