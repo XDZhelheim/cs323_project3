@@ -47,12 +47,16 @@ map<string, string> vmap;
 
 string createVar()
 {
-    return "v" + to_string(vCounter++);
+    string varName = "v" + to_string(vCounter++);
+    dmap[varName] = new DNode(varName);
+    return varName;
 }
 
 string createTemp()
 {
-    return "t" + to_string(tCounter++);
+    string tempName = "t" + to_string(tCounter++);
+    dmap[tempName] = new DNode(tempName);
+    return tempName;
 }
 
 string createLabel()
@@ -219,9 +223,6 @@ public:
             vmap[varName] = createVar();
         }
 
-        if (dmap.count(varName) == 0) {
-            dmap[varName] = new DNode(varName);
-        }
         return vmap[varName];
     }
 
@@ -513,6 +514,10 @@ public:
                 {
                     cout << code1 + code2;
                 }
+                
+                // dmap
+                dmap[place]->adj.push_back(dmap[name]);
+
                 return code1 + code2;
             }
         }
@@ -552,6 +557,10 @@ public:
                 {
                     cout << code1 + code2 + code3;
                 }
+
+                // dmap
+                dmap[vmap[node->child[0]->child[0]->data]]->adj.push_back(dmap[name]);
+
                 return code1 + code2 + code3;
             }
             else if (node->child[1]->name == "PLUS")
@@ -565,6 +574,11 @@ public:
                 {
                     cout << code1 + code2 + code3;
                 }
+
+                // dmap
+                dmap[place]->adj.push_back(dmap[name1]);
+                dmap[place]->adj.push_back(dmap[name2]);
+
                 return code1 + code2 + code3;
             }
             else if (node->child[1]->name == "MINUS")
@@ -578,6 +592,11 @@ public:
                 {
                     cout << code1 + code2 + code3;
                 }
+
+                // dmap
+                dmap[place]->adj.push_back(dmap[name1]);
+                dmap[place]->adj.push_back(dmap[name2]);
+
                 return code1 + code2 + code3;
             }
             else if (node->child[1]->name == "MUL")
@@ -591,6 +610,11 @@ public:
                 {
                     cout << code1 + code2 + code3;
                 }
+
+                // dmap
+                dmap[place]->adj.push_back(dmap[name1]);
+                dmap[place]->adj.push_back(dmap[name2]);
+
                 return code1 + code2 + code3;
             }
             else if (node->child[1]->name == "DIV")
@@ -604,6 +628,11 @@ public:
                 {
                     cout << code1 + code2 + code3;
                 }
+
+                // dmap
+                dmap[place]->adj.push_back(dmap[name1]);
+                dmap[place]->adj.push_back(dmap[name2]);
+
                 return code1 + code2 + code3;
             }
             else if (node->child[0]->name == "LP") {
@@ -619,6 +648,12 @@ public:
                 {
                     cout << translateExp(node->child[2]->child[0], name) + "WRITE " + name + "\n";
                 }
+
+                // dmap
+                DNode* root = new DNode("write " + name);
+                root->adj.push_back(dmap[name]);
+                graphRoots.push_back(root);
+
                 return translateExp(node->child[2]->child[0], name) + "WRITE " + name + "\n";
             }
             else
@@ -665,7 +700,7 @@ public:
         }
         if (node->child.size() == 2)
         {
-            return translateCondExp(node, label_false, label_true);
+            return translateCondExp(node->child[1], label_false, label_true);
         }
         else
         {
@@ -690,6 +725,13 @@ public:
                 string code1 = translateExp(node->child[0], name1);
                 string code2 = translateExp(node->child[2], name2);
                 string code3 = "IF " + name1 + " == " + name2 + " GOTO " + label_true + "\nGOTO " + label_false + "\n";
+                
+                // dmap
+                DNode* root = new DNode("if " + name1 + node->child[1]->name + name2);
+                root->adj.push_back(dmap[name1]);
+                root->adj.push_back(dmap[name2]);
+                graphRoots.push_back(root);
+                
                 return code1 + code2 + code3;
             }
             else if (node->child[1]->name == "NE")
@@ -699,6 +741,13 @@ public:
                 string code1 = translateExp(node->child[0], name1);
                 string code2 = translateExp(node->child[2], name2);
                 string code3 = "IF " + name1 + " != " + name2 + " GOTO " + label_true + "\nGOTO " + label_false + "\n";
+                
+                // dmap
+                DNode* root = new DNode("if " + name1 + node->child[1]->name + name2);
+                root->adj.push_back(dmap[name1]);
+                root->adj.push_back(dmap[name2]);
+                graphRoots.push_back(root);
+                
                 return code1 + code2 + code3;
             }
             else if (node->child[1]->name == "GT")
@@ -708,6 +757,13 @@ public:
                 string code1 = translateExp(node->child[0], name1);
                 string code2 = translateExp(node->child[2], name2);
                 string code3 = "IF " + name1 + " > " + name2 + " GOTO " + label_true + "\nGOTO " + label_false + "\n";
+                
+                // dmap
+                DNode* root = new DNode("if " + name1 + node->child[1]->name + name2);
+                root->adj.push_back(dmap[name1]);
+                root->adj.push_back(dmap[name2]);
+                graphRoots.push_back(root);
+                
                 return code1 + code2 + code3;
             }
             else if (node->child[1]->name == "GE")
@@ -717,6 +773,13 @@ public:
                 string code1 = translateExp(node->child[0], name1);
                 string code2 = translateExp(node->child[2], name2);
                 string code3 = "IF " + name1 + " >= " + name2 + " GOTO " + label_true + "\nGOTO " + label_false + "\n";
+                
+                // dmap
+                DNode* root = new DNode("if " + name1 + node->child[1]->name + name2);
+                root->adj.push_back(dmap[name1]);
+                root->adj.push_back(dmap[name2]);
+                graphRoots.push_back(root);
+                
                 return code1 + code2 + code3;
             }
             else if (node->child[1]->name == "LT")
@@ -726,6 +789,13 @@ public:
                 string code1 = translateExp(node->child[0], name1);
                 string code2 = translateExp(node->child[2], name2);
                 string code3 = "IF " + name1 + " < " + name2 + " GOTO " + label_true + "\nGOTO " + label_false + "\n";
+                
+                // dmap
+                DNode* root = new DNode("if " + name1 + node->child[1]->name + name2);
+                root->adj.push_back(dmap[name1]);
+                root->adj.push_back(dmap[name2]);
+                graphRoots.push_back(root);
+                
                 return code1 + code2 + code3;
             }
             else
@@ -735,6 +805,13 @@ public:
                 string code1 = translateExp(node->child[0], name1);
                 string code2 = translateExp(node->child[2], name2);
                 string code3 = "IF " + name1 + " <= " + name2 + " GOTO " + label_true + "\nGOTO " + label_false + "\n";
+                
+                // dmap
+                DNode* root = new DNode("if " + name1 + node->child[1]->name + name2);
+                root->adj.push_back(dmap[name1]);
+                root->adj.push_back(dmap[name2]);
+                graphRoots.push_back(root);
+                
                 return code1 + code2 + code3;
             }
         }
