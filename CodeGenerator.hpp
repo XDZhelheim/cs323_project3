@@ -596,10 +596,16 @@ public:
                 {
                     code2 += "ARG " + arg + "\n";
                 }
+                if (place.length() == 0)
+                {
+                    place = createTemp();
+                }
+                
                 if (DEBUG)
                 {
                     cout << code1 + code2 + place + " := CALL " + node->child[0]->data + "\n";
                 }
+                
                 return code1 + code2 + place + " := CALL " + node->child[0]->data + "\n";
             }
         }
