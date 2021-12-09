@@ -911,7 +911,7 @@ public:
     {
         istringstream strin(line);
         string subs;
-        while (getline(strin, subs))
+        while ((strin >> subs))
         {
             for (auto item : uselessNode)
             {
